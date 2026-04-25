@@ -67,6 +67,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="app-layout" data-is-mobile={isMobile}>
+      {/* 
+        CRITICAL UI FIX: This ensures mobile layout is forced correctly 
+        even if CSS bundle is cached or has specificity issues.
+      */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media screen and (max-width: 768px) {
+          .sidebar { display: none !important; }
+          .main-area { 
+            margin-left: 0 !important; 
+            padding-left: 0 !important;
+            width: 100vw !important;
+            flex: 1 !important;
+          }
+          .app-layout { 
+            display: flex !important; 
+            flex-direction: column !important;
+          }
+          .page-content {
+            width: 100% !important;
+            max-width: 100vw !important;
+            padding: 16px !important;
+          }
+        }
+      ` }} />
+
       {/* Mobile Warning Banner */}
       {isMobile && (
         <div style={{ 
