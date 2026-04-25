@@ -1,10 +1,10 @@
-export const THAILLM_BASE = 'https://api.aieat.or.th/v1'; // Updated to HTTPS and official endpoint
+export const THAILLM_BASE = 'https://thaillm.or.th/api/v1'; // Reverted to stable host with HTTPS
 
 export const MODELS = {
-  openthaigpt: 'openthaigpt-thaillm-8b-instruct-v7.2',
-  pathumma: 'pathumma-thaillm-qwen3-8b-think-3.0.0',
-  typhoon: 'typhoon-s-thaillm-8b-instruct',
-  thalle: 'thalle-0.2-thaillm-8b-fa',
+  openthaigpt: 'openthaigpt',
+  pathumma: 'pathumma',
+  typhoon: 'typhoon',
+  thalle: 'thalle',
 } as const;
 
 export type ModelKey = keyof typeof MODELS;
