@@ -5,7 +5,7 @@ import { useVoice } from '@/lib/hooks/useVoice';
 import { useExamGenerator } from '@/lib/hooks/useExamGenerator';
 import { useNotes } from '@/lib/hooks/useNotes';
 import { useTodos } from '@/lib/hooks/useTodos';
-import { callLLM, buildSystemPrompt } from '@/lib/thaillm';
+import { MODELS, callLLM, buildSystemPrompt } from '@/lib/thaillm';
 import { IconMicrophone, IconSparkle, IconFileText, IconCheck, IconX, IconVolume, IconVolumeOff } from '@/components/ui/Icons';
 
 type Mode = 'tutor' | 'exam';
