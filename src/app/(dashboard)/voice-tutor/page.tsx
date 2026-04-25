@@ -39,16 +39,17 @@ export default function VoiceTutorPage() {
     setAiResponse('');
     try {
       const messages = [
-        { role: 'system', content: systemPrompt + '\nตอบสั้นกระชับ เหมาะกับการฟัง ไม่ใช้ markdown' },
+        { role: 'system', content: systemPrompt + '\nตอบสั้นกระชับ เหมาะกับการฟัง ไม่ใช้ markdown ไม่ต้องมีข้อความ "แนะนำ:" ท้ายคำตอบ' },
         { role: 'user', content: question },
       ];
-      const res = await callLLM('openthaigpt-thaillm-8b-instruct-v7.2', messages);
+      const res = await callLLM(MODELS.openthaigpt, messages);
       const text = res.choices[0].message.content;
       // Remove suggestion line
       const clean = text.split('\n').filter((l: string) => !l.startsWith('แนะนำ:')).join('\n').trim();
       setAiResponse(clean);
       if (autoSpeak) speak(clean);
-    } catch {
+    } catch (err) {
+      console.error('Voice AI Error:', err);
       setAiResponse('ขออภัย ไม่สามารถตอบได้ในขณะนี้');
     } finally {
       setIsThinking(false);
