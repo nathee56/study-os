@@ -64,7 +64,7 @@ export const AnimatedCheckbox = ({
         background: checked ? 'var(--accent)' : 'transparent',
         display: 'flex',
         alignItems: 'center',
-        justifyChild: 'center',
+        justifyContent: 'center',
         cursor: 'pointer',
         transition: 'all 0.2s ease',
         position: 'relative',

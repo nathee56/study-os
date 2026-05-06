@@ -107,9 +107,9 @@ export default function DashboardPage() {
                   <div style={{ marginBottom: 4 }}>
                     <AnimatedProgressCircle progress={progressPct} size={20} strokeWidth={2.5} />
                   </div>
-                ) : (
+                ) : stat.icon ? (
                   <stat.icon size={16} style={{ color: 'var(--orange)', marginBottom: 4 }} />
-                )}
+                ) : null}
                 <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>{stat.value}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-hint)', whiteSpace: 'nowrap' }}>{stat.label}</div>
               </div>
@@ -132,9 +132,9 @@ export default function DashboardPage() {
                 <div style={{ marginBottom: 4 }}>
                   <AnimatedProgressCircle progress={progressPct} size={24} strokeWidth={3} />
                 </div>
-              ) : (
+              ) : stat.icon ? (
                 <stat.icon size={18} style={{ color: 'var(--orange)', marginBottom: 4 }} />
-              )}
+              ) : null}
               <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>{stat.value}</div>
               <div style={{ fontSize: 11, color: 'var(--text-hint)' }}>{stat.label}</div>
             </div>
