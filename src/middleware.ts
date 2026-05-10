@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Paths that don't need protection
-  if (path.startsWith('/login') || path.startsWith('/api') || path.startsWith('/_next') || path.includes('.')) {
+  if (path.startsWith('/login') || path.startsWith('/onboarding') || path.startsWith('/api') || path.startsWith('/_next') || path.includes('.')) {
     return NextResponse.next();
   }
 

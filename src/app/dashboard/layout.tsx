@@ -3,9 +3,11 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useTodos } from '@/lib/hooks/useTodos';
+import { useOnboarding } from '@/lib/hooks/useOnboarding';
 import Sidebar from '@/components/layout/Sidebar';
 import Topbar from '@/components/layout/Topbar';
 import MobileNav from '@/components/layout/MobileNav';
+import LockScreen from '@/components/lock/LockScreen';
 import { useState, useEffect } from 'react';
 
 const pageTitles: Record<string, { title: string; subtitle?: string }> = {
@@ -22,6 +24,7 @@ const pageTitles: Record<string, { title: string; subtitle?: string }> = {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isLocalMode, loading } = useAuth();
   const { todos } = useTodos();
+  const { needsOnboarding, loading: onboardingLoading } = useOnboarding();
   const router = useRouter();
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
@@ -39,7 +42,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [user, isLocalMode, loading, router]);
 
-  if (loading) {
+  // Onboarding redirect
+  useEffect(() => {
+    if (!loading && !onboardingLoading && needsOnboarding && (user || isLocalMode)) {
+      router.push('/onboarding');
+    }
+  }, [loading, onboardingLoading, needsOnboarding, user, isLocalMode, router]);
+
+  if (loading || onboardingLoading) {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -56,6 +66,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   if (!user && !isLocalMode) return null;
+  if (needsOnboarding) return null;
 
   let key = pathname.replace(/^\/(dashboard|app)/, '');
   if (key === '') key = '/';
@@ -64,6 +75,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pageInfo = pageTitles[basePathname] || pageTitles[key] || { title: 'Study OS' };
 
   return (
+    <LockScreen>
     <div className="app-layout" data-is-mobile={isMobile}>
       {/* 
         CRITICAL UI FIX: This ensures mobile layout is forced correctly 
@@ -102,5 +114,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       
       <MobileNav />
     </div>
+    </LockScreen>
   );
 }
