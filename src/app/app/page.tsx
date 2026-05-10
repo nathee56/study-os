@@ -4,13 +4,17 @@ import { useTodos } from '@/lib/hooks/useTodos';
 import { useNotes } from '@/lib/hooks/useNotes';
 import { IconCheckSquare, IconFileText, IconSparkle, IconSend, IconExternalLink, IconClock, IconCloud, IconMessageCircle } from '@/components/ui/Icons';
 import PWACapsule from '@/components/ui/PWACapsule';
+import AIAlertCard from '@/components/ui/AIAlertCard';
 import Link from 'next/link';
 import { useState, useMemo, useEffect } from 'react';
+import { useAIAlert } from '@/lib/hooks/useAIAlert';
+import { useAIMemory } from '@/lib/hooks/useAIMemory';
 import { AnimatedProgressCircle } from '@/components/ui/AnimatedComponents';
 
 export default function DashboardPage() {
   const { todos } = useTodos();
   const { notes } = useNotes();
+  const { getMemoryPrompt } = useAIMemory();
   const [aiQuery, setAiQuery] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
@@ -34,6 +38,15 @@ export default function DashboardPage() {
   const totalTodos = todos.length;
   const progressPct = totalTodos > 0 ? Math.round((completedThisWeek / totalTodos) * 100) : 0;
 
+  // AI Proactive Alerts
+  const alertContext = useMemo(() => ({
+    todos: pendingTodos.map(t => `${t.title} (ส่ง: ${t.dueDate?.toLocaleDateString('th-TH') || '-'})`).join(', '),
+    schedule: '',
+    memories: getMemoryPrompt(),
+    enabled: pendingTodos.length > 0,
+  }), [pendingTodos, getMemoryPrompt]);
+  const { alerts: aiAlerts, loading: alertsLoading, dismissAlert } = useAIAlert(alertContext);
+
   const aiTools = [
     { name: 'Google', url: 'https://google.com' },
     { name: 'Gemini', url: 'https://gemini.google.com' },
@@ -54,6 +67,7 @@ export default function DashboardPage() {
   return (
     <div className="animate-in">
       <PWACapsule />
+      <AIAlertCard alerts={aiAlerts} loading={alertsLoading} onDismiss={dismissAlert} />
       {/* AI Summary Banner — vibrant gradient */}
       <div className="card ai-banner" style={{ 
         marginBottom: isMobile ? 16 : 18, 

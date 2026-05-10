@@ -115,6 +115,28 @@ export function useChat() {
           ...m, timestamp: Timestamp.fromDate(m.timestamp),
         })),
       });
+
+      // Background: extract memories from conversation
+      try {
+        const extractRes = await fetch('/api/ai/extract-memory', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: allMessages.slice(-4).map(m => ({ role: m.role, content: m.content })),
+          }),
+        });
+        if (extractRes.ok) {
+          const extractData = await extractRes.json();
+          if (extractData.memories?.length > 0) {
+            // Store extracted memories - dispatch event for useAIMemory to pick up
+            window.dispatchEvent(new CustomEvent('ai-memories-extracted', {
+              detail: extractData.memories,
+            }));
+          }
+        }
+      } catch {
+        // Silent fail for memory extraction - it's non-critical
+      }
     } catch (error) {
       console.error('Send message error:', error);
     } finally {

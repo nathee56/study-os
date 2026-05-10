@@ -5,15 +5,19 @@ import { useSchedule } from '@/lib/hooks/useSchedule';
 import { useNotes } from '@/lib/hooks/useNotes';
 import { IconCheckSquare, IconCalendar, IconFileText, IconSparkle, IconSend, IconExternalLink, IconClock, IconCloud } from '@/components/ui/Icons';
 import PWACapsule from '@/components/ui/PWACapsule';
+import AIAlertCard from '@/components/ui/AIAlertCard';
 import Link from 'next/link';
 import { useState, useMemo, useEffect } from 'react';
 import { useWorkspace } from '@/lib/hooks/useWorkspace';
+import { useAIAlert } from '@/lib/hooks/useAIAlert';
+import { useAIMemory } from '@/lib/hooks/useAIMemory';
 import { AnimatedProgressCircle } from '@/components/ui/AnimatedComponents';
 
 export default function DashboardPage() {
   const { todos } = useTodos();
   const { getTodayClasses } = useSchedule();
   const { notes } = useNotes();
+  const { getMemoryPrompt } = useAIMemory();
   const [aiQuery, setAiQuery] = useState('');
   const todayClasses = useMemo(() => getTodayClasses(), [getTodayClasses]);
   const [isMobile, setIsMobile] = useState(false);
@@ -40,6 +44,15 @@ export default function DashboardPage() {
   const progressPct = totalTodos > 0 ? Math.round((completedThisWeek / totalTodos) * 100) : 0;
   const displayClasses = isMobile ? todayClasses.slice(0, 2) : todayClasses;
 
+  // AI Proactive Alerts
+  const alertContext = useMemo(() => ({
+    todos: pendingTodos.map(t => `${t.title} (ส่ง: ${t.dueDate?.toLocaleDateString('th-TH') || '-'})`).join(', '),
+    schedule: todayClasses.map(c => `${c.name} ${c.startTime}-${c.endTime}`).join(', '),
+    memories: getMemoryPrompt(),
+    enabled: pendingTodos.length > 0 || todayClasses.length > 0,
+  }), [pendingTodos, todayClasses, getMemoryPrompt]);
+  const { alerts: aiAlerts, loading: alertsLoading, dismissAlert } = useAIAlert(alertContext);
+
   const aiTools = [
     { name: 'Google', url: 'https://google.com' },
     { name: 'Gemini', url: 'https://gemini.google.com' },
@@ -60,6 +73,7 @@ export default function DashboardPage() {
   return (
     <div className="animate-in">
       <PWACapsule />
+      <AIAlertCard alerts={aiAlerts} loading={alertsLoading} onDismiss={dismissAlert} />
       {/* AI Summary Banner — vibrant gradient */}
       <div className="card ai-banner" style={{ 
         marginBottom: isMobile ? 16 : 18, 

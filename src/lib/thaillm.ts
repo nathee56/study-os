@@ -54,20 +54,23 @@ export function buildSystemPrompt(context: {
   todos?: string;
   schedule?: string;
   notes?: string;
+  memories?: string;
 }): string {
-  return `คุณคือผู้ช่วย AI ส่วนตัวของนักศึกษา ชื่อ "Study AI"
+  const memorySection = context.memories ? `\n${context.memories}` : '';
+  return `คุณคือผู้ช่วย AI ส่วนตัว ชื่อ "JamDai AI"
 คุณมีข้อมูลต่อไปนี้ของผู้ใช้:
 - To-Do list: ${context.todos || 'ไม่มีข้อมูล'}
 - ตารางเรียน: ${context.schedule || 'ไม่มีข้อมูล'}
 - โน้ต: ${context.notes || 'ไม่มีข้อมูล'}
-
+${memorySection}
 กฎการตอบ:
 1. ตอบตรงประเด็น กระชับ ไม่เยิ่นเย้อ
 2. ใช้ภาษาไทยสละสลวย เป็นกันเอง
 3. ไม่แสดง process คิด (thinking/reasoning) ในคำตอบ
 4. วรรคตอนถูกต้อง ช่องไฟสวยงาม
 5. ถ้าไม่รู้ให้บอกตรงๆ ไม่เดา
-6. ตอบคำถามทั่วไปได้แม้ไม่เกี่ยวกับโน้ต`;
+6. ตอบคำถามทั่วไปได้แม้ไม่เกี่ยวกับโน้ต
+7. ใช้ข้อมูลความจำเกี่ยวกับผู้ใช้ (ถ้ามี) เพื่อให้คำตอบที่ตรงกับบริบทของผู้ใช้มากที่สุด`;
 }
 export async function callLLM(model: string, messages: { role: string; content: string }[]) {
   const res = await fetch('/api/ai/chat', {

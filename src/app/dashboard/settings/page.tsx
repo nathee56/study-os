@@ -4,6 +4,8 @@ import { useAuth } from '@/lib/hooks/useAuth';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { usePWA } from '@/lib/hooks/usePWA';
 import { usePin } from '@/lib/hooks/usePin';
+import { useNotifications } from '@/lib/hooks/useNotifications';
+import { useAIMemory } from '@/lib/hooks/useAIMemory';
 import { IconSun, IconMoon, IconLogOut, IconUser, IconCloud, IconDownload, IconAlertCircle } from '@/components/ui/Icons';
 import { useState } from 'react';
 
@@ -12,6 +14,8 @@ export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
   const { installPrompt, isInstalled, installApp } = usePWA();
   const { hasPin, setPin, verifyPin, clearPin } = usePin();
+  const { isSupported: notifSupported, isSubscribed, subscribe, unsubscribe } = useNotifications();
+  const { memories, deleteMemory, clearAllMemories } = useAIMemory();
 
   const [showPinForm, setShowPinForm] = useState(false);
   const [currentPin, setCurrentPin] = useState('');
@@ -264,6 +268,72 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+
+      {/* Notifications */}
+      <div className="card" style={{ marginBottom: 16 }}>
+        <h3 style={{ fontSize: 16, marginBottom: 16 }}>การแจ้งเตือน</h3>
+        {notifSupported ? (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 500 }}>Push Notification</div>
+              <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>
+                {isSubscribed ? 'เปิดอยู่ — รับแจ้งเตือนงานและคาบเรียน' : 'ปิดอยู่ — กดเปิดเพื่อรับการแจ้งเตือน'}
+              </div>
+            </div>
+            <button
+              className={isSubscribed ? 'btn-ghost' : 'btn-primary'}
+              onClick={isSubscribed ? unsubscribe : subscribe}
+              style={{ padding: '8px 20px', borderRadius: 999, fontSize: 13 }}
+            >
+              {isSubscribed ? 'ปิด' : 'เปิด'}
+            </button>
+          </div>
+        ) : (
+          <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>
+            เบราว์เซอร์นี้ไม่รองรับ Push Notification ลองใช้ Chrome หรือติดตั้งแอป JamDai ลงเครื่องก่อน
+          </p>
+        )}
+      </div>
+
+      {/* AI Memory */}
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h3 style={{ fontSize: 16 }}>ความจำ AI ({memories.length})</h3>
+          {memories.length > 0 && (
+            <button className="btn-ghost" onClick={clearAllMemories} style={{ fontSize: 12, color: 'var(--danger)' }}>
+              ล้างทั้งหมด
+            </button>
+          )}
+        </div>
+        <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 12 }}>
+          AI จะจดจำข้อมูลเกี่ยวกับคุณจากการสนทนา เพื่อให้คำตอบตรงกับคุณมากขึ้น
+        </p>
+        {memories.length === 0 ? (
+          <p style={{ fontSize: 13, color: 'var(--text-hint)', textAlign: 'center', padding: 16 }}>
+            ยังไม่มีข้อมูล — ลองคุยกับ AI เพื่อให้ AI เริ่มจดจำ
+          </p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {memories.map(m => (
+              <div key={m.id} style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '8px 12px', borderRadius: 12,
+                background: 'var(--surface-raised)', fontSize: 13,
+              }}>
+                <span style={{ flex: 1, color: 'var(--text-secondary)' }}>{m.value}</span>
+                <button
+                  className="btn-icon"
+                  onClick={() => deleteMemory(m.id)}
+                  style={{ padding: 4, width: 28, height: 28 }}
+                  title="ลบ"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Info */}
       <div className="card" style={{ marginBottom: 16 }}>

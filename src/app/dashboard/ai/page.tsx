@@ -8,6 +8,7 @@ import { useAuth } from '@/lib/hooks/useAuth';
 import { useTodos } from '@/lib/hooks/useTodos';
 import { useSchedule } from '@/lib/hooks/useSchedule';
 import { useNotes } from '@/lib/hooks/useNotes';
+import { useAIMemory } from '@/lib/hooks/useAIMemory';
 import { MODELS, MODEL_INFO, ModelKey, buildSystemPrompt, recommendModel } from '@/lib/thaillm';
 import { 
   IconPlus, IconMessageCircle, IconTrash, IconCpu, IconChevronDown, 
@@ -21,6 +22,7 @@ export default function AIPage() {
   const { todos } = useTodos();
   const { getTodayClasses, schedule } = useSchedule();
   const { notes } = useNotes();
+  const { memories, getMemoryPrompt, deleteMemory } = useAIMemory();
 
   const [input, setInput] = useState('');
   const [model, setModel] = useState<ModelKey | 'auto'>('auto');
@@ -77,10 +79,11 @@ export default function AIPage() {
       todos: pendingTodos.map((t) => `${t.title} (${t.subject || 'ไม่ระบุวิชา'}, ส่ง: ${t.dueDate?.toLocaleDateString('th-TH') || '-'})`).join(', '),
       schedule: schedule.map((s) => `${s.name} ${s.day} ${s.startTime}-${s.endTime}`).join(', '),
       notes: notes.slice(0, 5).map((n) => `${n.title}`).join(', '),
+      memories: getMemoryPrompt(),
     });
     
     return `${basePrompt}\n\n${googleData}\n\nตอนท้ายสุดของคำตอบของคุณ ให้แนะนำคำถามถัดไปที่น่าสนใจ 3 ข้อเพื่อถามต่อ โดยคั่นด้วยเครื่องหมาย | และวางไว้บรรทัดสุดท้าย (ตัวอย่าง: แนะนำ: ข้อต่อไปคืออะไร | ขอรายละเอียดเพิ่ม | ยกตัวอย่าง)`;
-  }, [pendingTodos, schedule, notes, googleData]);
+  }, [pendingTodos, schedule, notes, googleData, getMemoryPrompt]);
 
   const suggestions = useMemo(() => {
     const items = [];
@@ -263,7 +266,7 @@ export default function AIPage() {
               }}>
                 <IconSparkle size={32} style={{ color: 'var(--orange)' }} />
               </div>
-              <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>Study AI พร้อมช่วยคุณ</h3>
+              <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>JamDai AI พร้อมช่วยคุณ</h3>
               <p style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 300 }}>ถามเกี่ยวกับงานที่ค้างอยู่ หรือให้ช่วยสรุปเนื้อหาบทเรียนได้ทันที</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 500, padding: '0 20px' }}>
                 {suggestions.map((s, i) => (
