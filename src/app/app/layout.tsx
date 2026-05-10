@@ -56,9 +56,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         minHeight: '100vh', background: 'var(--bg)',
       }}>
         <div style={{ textAlign: 'center' }}>
-          <h2 style={{ fontWeight: 700, fontSize: 20, color: 'var(--text-primary)', marginBottom: 8 }}>
-            Study<span style={{ color: 'var(--orange)' }}>OS</span>
-          </h2>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+            <img src="/logo.png" alt="JamDai" style={{ height: 48, objectFit: 'contain' }} />
+          </div>
           <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>กำลังโหลด...</p>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (key === '') key = '/';
   
   const basePathname = '/' + (key.split('/')[1] || '');
-  const pageInfo = pageTitles[basePathname] || pageTitles[key] || { title: 'Study OS' };
+  const pageInfo = pageTitles[basePathname] || pageTitles[key] || { title: 'JamDai' };
 
   return (
     <LockScreen>

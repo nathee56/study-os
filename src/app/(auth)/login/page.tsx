@@ -51,9 +51,9 @@ export default function LoginPage() {
         }}
       >
         {/* Logo */}
-        <h1 style={{ fontWeight: 800, fontSize: 34, marginBottom: 8, letterSpacing: '-0.5px' }}>
-          Study<span style={{ color: 'var(--accent)' }}>OS</span>
-        </h1>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <img src="/logo.png" alt="JamDai" style={{ height: 96, objectFit: 'contain' }} />
+        </div>
         <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 8, fontWeight: 500 }}>
           Productivity Workspace สำหรับนักศึกษา
         </p>

@@ -87,9 +87,9 @@ export default function LockScreen({ children }: { children: React.ReactNode }) 
     }}>
       <div style={{ maxWidth: 360, width: '100%', textAlign: 'center' }}>
         {/* Logo */}
-        <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.5px' }}>
-          Study<span style={{ color: 'var(--accent)' }}>OS</span>
-        </h1>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <img src="/logo.png" alt="JamDai" style={{ height: 64, objectFit: 'contain' }} />
+        </div>
 
         {/* Lock Icon */}
         <div style={{

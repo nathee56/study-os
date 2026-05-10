@@ -227,9 +227,9 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
           boxShadow: '4px 0 24px rgba(0,0,0,0.15)',
         }}>
           <div style={{ padding: '24px 16px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
-              Study<span style={{ color: 'var(--accent)' }}>OS</span>
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <img src="/logo.png" alt="JamDai" style={{ height: 40, objectFit: 'contain' }} />
+            </div>
             <button className="btn-icon" onClick={() => setIsMenuOpen(false)} style={{ width: 44, height: 44, borderRadius: 999, background: 'var(--surface-raised)' }}>
               <IconX size={20} />
             </button>

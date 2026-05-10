@@ -10,8 +10,8 @@ const sarabun = Sarabun({
 });
 
 export const metadata: Metadata = {
-  title: "Study OS — Productivity Workspace",
-  description: "Study OS เป็น productivity workspace ส่วนตัวสำหรับนักศึกษามหาวิทยาลัยราชภัฏนครสวรรค์ โดยมี AI ภาษาไทย เป็นศูนย์กลาง",
+  title: "JamDai — Productivity Workspace",
+  description: "JamDai เป็น productivity workspace ส่วนตัวสำหรับนักศึกษา โดยมี AI ภาษาไทย เป็นศูนย์กลาง",
 };
 
 export default function RootLayout({

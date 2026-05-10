@@ -256,7 +256,7 @@ export default function SettingsPage() {
           <h3 style={{ fontSize: 16, marginBottom: 16, color: 'var(--orange)' }}>ติดตั้งแอปพลิเคชัน</h3>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ fontSize: 14, color: 'var(--text-primary)' }}>
-              ติดตั้ง Study OS ลงในเครื่องเพื่อเข้าถึงได้รวดเร็วขึ้น
+              ติดตั้ง JamDai ลงในเครื่องเพื่อเข้าถึงได้รวดเร็วขึ้น
             </div>
             <button className="btn-primary" onClick={installApp} style={{ gap: 8 }}>
               <IconDownload size={16} /> ติดตั้ง
@@ -269,7 +269,7 @@ export default function SettingsPage() {
       <div className="card" style={{ marginBottom: 16 }}>
         <h3 style={{ fontSize: 16, marginBottom: 16 }}>เกี่ยวกับ</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
-          <div>Study OS v1.0</div>
+          <div>JamDai v1.0</div>
           <div>Productivity Workspace สำหรับนักศึกษา</div>
           <div>มหาวิทยาลัยราชภัฏนครสวรรค์</div>
           <div style={{ color: 'var(--text-hint)', fontSize: 11, marginTop: 4 }}>

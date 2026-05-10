@@ -83,7 +83,7 @@ export default function GoogleWorkspacePage() {
     <div className="animate-fade-in" style={{ paddingBottom: 40 }}>
       <header style={{ marginBottom: 32 }}>
         <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>Google Workspace</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>ดูข้อมูลและทำงานร่วมกับบริการของ Google ได้โดยตรงจาก Study OS</p>
+        <p style={{ color: 'var(--text-secondary)' }}>ดูข้อมูลและทำงานร่วมกับบริการของ Google ได้โดยตรงจาก JamDai</p>
       </header>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>

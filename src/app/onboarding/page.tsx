@@ -89,9 +89,9 @@ export default function OnboardingPage() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
-          <h2 style={{ fontWeight: 800, fontSize: 28, color: 'var(--text-primary)', marginBottom: 8 }}>
-            Study<span style={{ color: 'var(--accent)' }}>OS</span>
-          </h2>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+            <img src="/logo.png" alt="JamDai" style={{ height: 80, objectFit: 'contain' }} />
+          </div>
           <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>กำลังโหลด...</p>
         </div>
       </div>
@@ -103,11 +103,11 @@ export default function OnboardingPage() {
   const slideContent = [
     // ── SLIDE 1: Welcome ──
     <div key="welcome" style={{ textAlign: 'center' }}>
-      <h1 style={{ fontSize: 40, fontWeight: 800, marginBottom: 8, letterSpacing: '-1px' }}>
-        Study<span style={{ color: 'var(--accent)' }}>OS</span>
-      </h1>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+        <img src="/logo.png" alt="JamDai" style={{ height: 96, objectFit: 'contain' }} />
+      </div>
       <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
-        ยินดีต้อนรับสู่ Study OS
+        ยินดีต้อนรับสู่ JamDai
       </h2>
       <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 40, lineHeight: 1.6 }}>
         ผู้ช่วยการเรียนส่วนตัวที่เข้าใจคุณ

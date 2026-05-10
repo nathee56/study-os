@@ -1,7 +1,7 @@
 {
-  "name": "Study OS",
-  "short_name": "Study OS",
-  "description": "Premium Productivity Workspace for Students",
+  "name": "JamDai",
+  "short_name": "JamDai",
+  "description": "Productivity Workspace",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FBF8F1",
