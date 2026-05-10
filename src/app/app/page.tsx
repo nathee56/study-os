@@ -5,6 +5,7 @@ import { useNotes } from '@/lib/hooks/useNotes';
 import { IconCheckSquare, IconFileText, IconSparkle, IconSend, IconExternalLink, IconClock, IconCloud, IconMessageCircle } from '@/components/ui/Icons';
 import PWACapsule from '@/components/ui/PWACapsule';
 import AIAlertCard from '@/components/ui/AIAlertCard';
+import WhatsNewPopup from '@/components/ui/WhatsNewPopup';
 import Link from 'next/link';
 import { useState, useMemo, useEffect } from 'react';
 import { useAIAlert } from '@/lib/hooks/useAIAlert';
@@ -68,6 +69,7 @@ export default function DashboardPage() {
     <div className="animate-in">
       <PWACapsule />
       <AIAlertCard alerts={aiAlerts} loading={alertsLoading} onDismiss={dismissAlert} />
+      <WhatsNewPopup />
       {/* AI Summary Banner — vibrant gradient */}
       <div className="card ai-banner" style={{ 
         marginBottom: isMobile ? 16 : 18, 
