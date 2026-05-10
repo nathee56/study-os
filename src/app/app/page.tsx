@@ -3,6 +3,7 @@
 import { useTodos } from '@/lib/hooks/useTodos';
 import { useNotes } from '@/lib/hooks/useNotes';
 import { IconCheckSquare, IconFileText, IconSparkle, IconSend, IconExternalLink, IconClock, IconCloud, IconMessageCircle } from '@/components/ui/Icons';
+import PWACapsule from '@/components/ui/PWACapsule';
 import Link from 'next/link';
 import { useState, useMemo, useEffect } from 'react';
 import { AnimatedProgressCircle } from '@/components/ui/AnimatedComponents';
@@ -52,6 +53,7 @@ export default function DashboardPage() {
 
   return (
     <div className="animate-in">
+      <PWACapsule />
       {/* AI Summary Banner — vibrant gradient */}
       <div className="card ai-banner" style={{ 
         marginBottom: isMobile ? 16 : 18, 

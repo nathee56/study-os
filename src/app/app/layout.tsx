@@ -8,6 +8,7 @@ import Sidebar from '@/components/layout/Sidebar';
 import Topbar from '@/components/layout/Topbar';
 import MobileNav from '@/components/layout/MobileNav';
 import LockScreen from '@/components/lock/LockScreen';
+import PWAPrompt from '@/components/ui/PWAPrompt';
 import { useState, useEffect } from 'react';
 
 const pageTitles: Record<string, { title: string; subtitle?: string }> = {
@@ -60,6 +61,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <img src="/logo.png" alt="JamDai" style={{ height: 160, width: 'auto', maxWidth: '80vw', objectFit: 'contain' }} />
           </div>
           <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>กำลังโหลด...</p>
+          {/* PWA Prompt */}
+          <PWAPrompt />
         </div>
       </div>
     );
@@ -113,6 +116,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
       
       <MobileNav />
+      <PWAPrompt />
     </div>
     </LockScreen>
   );
