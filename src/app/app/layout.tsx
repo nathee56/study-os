@@ -19,6 +19,7 @@ const pageTitles: Record<string, { title: string; subtitle?: string }> = {
   '/drive': { title: 'Google Drive', subtitle: 'เชื่อมต่อและให้ AI อ่านเอกสาร' },
   '/ai-tools': { title: 'AI Tools & Links', subtitle: 'เครื่องมือ AI และลิงก์ที่มีประโยชน์' },
   '/ai': { title: 'AI Assistant', subtitle: 'Study AI พร้อมช่วยเหลือคุณ' },
+  '/pomodoro': { title: 'Pomodoro', subtitle: 'โหมดจดจ่อกับการเรียน' },
   '/settings': { title: 'ตั้งค่า', subtitle: 'ตั้งค่าบัญชีและแอปพลิเคชัน' },
 };
 

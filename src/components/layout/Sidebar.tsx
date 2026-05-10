@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/hooks/useAuth';
 import {
   IconHome, IconCheckSquare, IconCalendar, IconFileText,
-  IconCpu, IconMessageCircle, IconSettings, IconLogOut, IconCloud, IconMail
+  IconCpu, IconMessageCircle, IconSettings, IconLogOut, IconCloud, IconMail, IconClock
 } from '@/components/ui/Icons';
 
 const nuNavItems = [
@@ -13,6 +13,7 @@ const nuNavItems = [
   { href: '/dashboard/todo', label: 'To-Do List', icon: IconCheckSquare },
   { href: '/dashboard/schedule', label: 'ตารางเรียน', icon: IconCalendar },
   { href: '/dashboard/notes', label: 'Notes', icon: IconFileText },
+  { href: '/dashboard/pomodoro', label: 'Pomodoro', icon: IconClock },
   { href: '/dashboard/google-workspace', label: 'Google Workspace', icon: IconMail },
   { href: '/dashboard/ai-tools', label: 'AI Tools', icon: IconCpu },
   { href: '/dashboard/ai', label: 'AI Assistant', icon: IconMessageCircle },
@@ -22,6 +23,7 @@ const publicNavItems = [
   { href: '/app', label: 'หน้าแรก', icon: IconHome },
   { href: '/app/todo', label: 'งาน', icon: IconCheckSquare },
   { href: '/app/notes', label: 'โน้ต', icon: IconFileText },
+  { href: '/app/pomodoro', label: 'Pomodoro', icon: IconClock },
   { href: '/app/ai', label: 'AI', icon: IconMessageCircle },
 ];
 
@@ -36,6 +38,7 @@ export default function Sidebar() {
     { href: '/app', label: 'หน้าแรก', icon: IconHome },
     { href: '/app/todo', label: 'งาน', icon: IconCheckSquare },
     { href: '/app/notes', label: 'โน้ต', icon: IconFileText },
+    { href: '/app/pomodoro', label: 'Pomodoro', icon: IconClock },
     { href: '/app/ai', label: 'AI', icon: IconMessageCircle },
   ];
   

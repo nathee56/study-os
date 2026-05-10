@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  IconHome, IconCheckSquare, IconCalendar, IconMessageCircle, IconPlus, IconFileText
+  IconHome, IconCheckSquare, IconCalendar, IconMessageCircle, IconPlus, IconFileText, IconClock
 } from '@/components/ui/Icons';
 
 export default function MobileNav() {
@@ -34,6 +34,10 @@ export default function MobileNav() {
             <button className="fab-sheet-item" onClick={() => { router.push(`${basePath}/notes?new=1`); setShowSheet(false); }}>
               <IconFileText size={18} style={{ color: 'var(--accent)' }} />
               <span>สร้างโน้ต</span>
+            </button>
+            <button className="fab-sheet-item" onClick={() => { router.push(`${basePath}/pomodoro`); setShowSheet(false); }}>
+              <IconClock size={18} style={{ color: 'var(--orange)' }} />
+              <span>โฟกัส / Pomodoro</span>
             </button>
           </div>
         </div>
