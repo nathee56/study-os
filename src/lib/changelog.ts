@@ -12,9 +12,41 @@ export interface ChangelogEntry {
   }[];
 }
 
-export const CURRENT_VERSION = '2.1.1';
+export const CURRENT_VERSION = '2.2.0';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '2.2.0',
+    date: '2026-05-10',
+    title: 'โหมดจดจ่อ (Pomodoro) ใหม่ทั้งหมด',
+    highlights: [
+      {
+        emoji: '⏱️',
+        title: 'Circular Timer สวยงาม',
+        description: 'วงกลม Progress แสดงเวลาที่เหลืออย่างชัดเจน พร้อม Animation ลื่นไหล',
+      },
+      {
+        emoji: '🎵',
+        title: 'เสียงบรรยากาศ',
+        description: 'เลือกเสียงพื้นหลังขณะ Focus ได้ 3 แบบ: เสียงฝน, กองไฟ, นกร้อง',
+      },
+      {
+        emoji: '📌',
+        title: 'ผูกงานกับ Timer',
+        description: 'เลือก To-Do ที่กำลังทำได้ จะแสดงชื่องานไว้ใน Timer เพื่อไม่ให้หลุดโฟกัส',
+      },
+      {
+        emoji: '📊',
+        title: 'สถิติการโฟกัส',
+        description: 'ติดตามจำนวนรอบ เวลารวม และเปอร์เซ็นต์เป้าหมายรายวัน',
+      },
+      {
+        emoji: '🌿',
+        title: 'Long Break อัตโนมัติ',
+        description: 'พักยาว 15 นาทีทุกๆ 4 รอบ ระบบสลับ Focus/Break ให้เองอัตโนมัติ',
+      },
+    ],
+  },
   {
     version: '2.1.1',
     date: '2026-05-10',
