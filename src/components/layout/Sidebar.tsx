@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/hooks/useAuth';
 import {
   IconHome, IconCheckSquare, IconCalendar, IconFileText,
-import { IconSettings, IconLogOut, IconCloud, IconMail, IconClock, IconChevronLeft, IconChevronRight } from '@/components/ui/Icons';
+  IconCpu, IconMessageCircle, IconSettings, IconLogOut, IconCloud, IconMail, IconClock, IconChevronLeft, IconChevronRight
+} from '@/components/ui/Icons';
 import { useState, useEffect } from 'react';
 
 const nuNavItems = [
@@ -78,7 +79,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav style={{ flex: 1, paddingTop: 4, overflowY: 'auto', paddingX: isCollapsed ? 8 : 16 }}>
+      <nav style={{ flex: 1, paddingTop: 4, overflowY: 'auto', paddingLeft: isCollapsed ? 8 : 16, paddingRight: isCollapsed ? 8 : 16 }}>
         {filteredNavItems.map((item) => (
           <Link
             key={item.href}

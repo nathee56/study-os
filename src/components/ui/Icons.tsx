@@ -96,8 +96,19 @@ export const IconSun = ({ size, ...props }: IconProps) => (
     <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
     <line x1="1" y1="12" x2="3" y2="12" />
     <line x1="21" y1="12" x2="23" y2="12" />
-    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+  </svg>
+);
+
+export const IconChevronLeft = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props}>
+    <polyline points="15 18 9 12 15 6" />
+  </svg>
+);
+
+export const IconChevronRight = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props}>
+    <polyline points="9 18 15 12 9 6" />
   </svg>
 );
 

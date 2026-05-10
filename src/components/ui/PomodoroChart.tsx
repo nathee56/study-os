@@ -38,7 +38,7 @@ export default function PomodoroChart({ todayFocusMinutes }: PomodoroChartProps)
             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', background: 'var(--surface-card)' }}
             itemStyle={{ color: 'var(--orange)', fontWeight: 600 }}
             labelStyle={{ color: 'var(--text-secondary)', marginBottom: 4 }}
-            formatter={(value: number) => [`${value} นาที`, 'เวลาโฟกัส']}
+            formatter={(value: any) => [`${value} นาที`, 'เวลาโฟกัส']}
           />
           <Area type="monotone" dataKey="minutes" stroke="var(--orange)" strokeWidth={3} fillOpacity={1} fill="url(#colorMinutes)" activeDot={{ r: 6, fill: 'var(--orange)', stroke: '#fff', strokeWidth: 2 }} />
         </AreaChart>
