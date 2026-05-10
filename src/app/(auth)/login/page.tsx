@@ -2,16 +2,37 @@
 
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function LoginPage() {
   const { user, loading, signIn, isLocalMode, loginLocalMode } = useAuth();
   const router = useRouter();
+  const [signingIn, setSigningIn] = useState(false);
 
   useEffect(() => {
-    if (!loading && isLocalMode) router.push('/app');
-    else if (!loading && user) router.push('/');
+    if (!loading && isLocalMode) router.replace('/app');
+    else if (!loading && user) {
+      // Determine tier from email
+      const isNU = user.email?.endsWith('@nsru.ac.th');
+      router.replace(isNU ? '/dashboard' : '/app');
+    }
   }, [user, isLocalMode, loading, router]);
+
+  const handleGoogleSignIn = async () => {
+    setSigningIn(true);
+    try {
+      await signIn();
+      // Wait a moment for cookies to propagate before the useEffect redirect fires
+      await new Promise(r => setTimeout(r, 500));
+    } catch {
+      setSigningIn(false);
+    }
+  };
+
+  const handleLocalMode = () => {
+    setSigningIn(true);
+    loginLocalMode();
+  };
 
   if (loading) return null;
 
@@ -42,14 +63,17 @@ export default function LoginPage() {
 
         {/* Google Sign In */}
         <button
-          onClick={signIn}
+          onClick={handleGoogleSignIn}
+          disabled={signingIn}
           className="btn-secondary"
           style={{
             width: '100%', height: 56, fontSize: 16,
             borderRadius: 999,
             justifyContent: 'center', gap: 12,
             border: '1.5px solid var(--border-strong)',
-            marginBottom: 16
+            marginBottom: 16,
+            opacity: signingIn ? 0.6 : 1,
+            pointerEvents: signingIn ? 'none' : 'auto',
           }}
         >
           <svg width="22" height="22" viewBox="0 0 48 48">
@@ -58,7 +82,7 @@ export default function LoginPage() {
             <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
             <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           </svg>
-          เข้าสู่ระบบด้วย Google
+          {signingIn ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบด้วย Google'}
         </button>
 
         <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 28, lineHeight: 1.5 }}>
@@ -74,13 +98,16 @@ export default function LoginPage() {
 
         {/* Local Mode Sign In */}
         <button
-          onClick={loginLocalMode}
+          onClick={handleLocalMode}
+          disabled={signingIn}
           className="btn-ghost"
           style={{
             width: '100%', height: 56, fontSize: 15,
             borderRadius: 999,
             justifyContent: 'center', gap: 10,
             background: 'var(--surface-raised)',
+            opacity: signingIn ? 0.6 : 1,
+            pointerEvents: signingIn ? 'none' : 'auto',
           }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

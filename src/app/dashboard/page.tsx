@@ -79,7 +79,7 @@ export default function DashboardPage() {
               <IconSparkle size={20} />
             </div>
             <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: 16, marginBottom: 4, fontWeight: 600, color: '#fff' }}>✨ สรุปภาพรวมวันนี้</h3>
+              <h3 style={{ fontSize: 16, marginBottom: 4, fontWeight: 600, color: '#fff' }}>สรุปภาพรวมวันนี้</h3>
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.9)', lineHeight: 1.7 }}>
                 {pendingTodos.length > 0 ? (
                   <span>
@@ -87,7 +87,7 @@ export default function DashboardPage() {
                     {todayClasses.length > 0 && ` และคาบเรียน ${todayClasses.length} คาบวันนี้`}
                   </span>
                 ) : (
-                  <span>🎉 ยอดเยี่ยม! วันนี้ไม่มีงานค้าง พร้อมลุยวันใหม่</span>
+                  <span>ยอดเยี่ยม! วันนี้ไม่มีงานค้าง พร้อมลุยวันใหม่</span>
                 )}
               </div>
             </div>
@@ -161,7 +161,7 @@ export default function DashboardPage() {
             <Link href="/dashboard/todo" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>ดูทั้งหมด →</Link>
           </div>
           {todayTodos.length === 0 ? (
-            <p style={{ fontSize: 13, color: 'var(--text-hint)', textAlign: 'center', padding: 20 }}>ไม่มีงานค้าง 🎉</p>
+            <p style={{ fontSize: 13, color: 'var(--text-hint)', textAlign: 'center', padding: 20 }}>ไม่มีงานค้าง</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {todayTodos.map((todo) => (
@@ -194,7 +194,7 @@ export default function DashboardPage() {
             <Link href="/dashboard/schedule" style={{ fontSize: 12, color: 'var(--violet)', textDecoration: 'none', fontWeight: 500 }}>ดูตาราง →</Link>
           </div>
           {displayClasses.length === 0 ? (
-            <p style={{ fontSize: 13, color: 'var(--text-hint)', textAlign: 'center', padding: 20 }}>วันนี้ไม่มีคาบเรียน 📚</p>
+            <p style={{ fontSize: 13, color: 'var(--text-hint)', textAlign: 'center', padding: 20 }}>วันนี้ไม่มีคาบเรียน</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {displayClasses.map((cls) => (

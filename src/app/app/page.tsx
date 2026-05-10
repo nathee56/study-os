@@ -2,7 +2,7 @@
 
 import { useTodos } from '@/lib/hooks/useTodos';
 import { useNotes } from '@/lib/hooks/useNotes';
-import { IconCheckSquare, IconFileText, IconSparkle, IconSend, IconExternalLink, IconClock, IconCloud } from '@/components/ui/Icons';
+import { IconCheckSquare, IconFileText, IconSparkle, IconSend, IconExternalLink, IconClock, IconCloud, IconMessageCircle } from '@/components/ui/Icons';
 import Link from 'next/link';
 import { useState, useMemo, useEffect } from 'react';
 import { AnimatedProgressCircle } from '@/components/ui/AnimatedComponents';
@@ -47,6 +47,7 @@ export default function DashboardPage() {
     { icon: IconCheckSquare, value: pendingTodos.length, label: 'งานค้าง', color: 'var(--accent)' },
     { icon: IconFileText, value: notes.length, label: 'โน้ตทั้งหมด', color: 'var(--teal)' },
     { isProgress: true, value: `${progressPct}%`, label: 'ความคืบหน้า', color: 'var(--sky)' },
+    { icon: IconMessageCircle, value: 'AI', label: 'ผู้ช่วย AI', color: 'var(--violet)' },
   ];
 
   return (
@@ -72,14 +73,14 @@ export default function DashboardPage() {
               <IconSparkle size={20} />
             </div>
             <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: 16, marginBottom: 4, fontWeight: 600, color: '#fff' }}>✨ สรุปภาพรวมวันนี้</h3>
+              <h3 style={{ fontSize: 16, marginBottom: 4, fontWeight: 600, color: '#fff' }}>สรุปภาพรวมวันนี้</h3>
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.9)', lineHeight: 1.7 }}>
                 {pendingTodos.length > 0 ? (
                   <span>
                     คุณมีงานค้าง <strong style={{ color: '#fff' }}>{pendingTodos.length} รายการ</strong>
                   </span>
                 ) : (
-                  <span>🎉 ยอดเยี่ยม! วันนี้ไม่มีงานค้าง พร้อมลุยวันใหม่</span>
+                  <span>ยอดเยี่ยม! วันนี้ไม่มีงานค้าง พร้อมลุยวันใหม่</span>
                 )}
               </div>
             </div>
@@ -153,7 +154,7 @@ export default function DashboardPage() {
             <Link href="/app/todo" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>ดูทั้งหมด →</Link>
           </div>
           {todayTodos.length === 0 ? (
-            <p style={{ fontSize: 13, color: 'var(--text-hint)', textAlign: 'center', padding: 20 }}>ไม่มีงานค้าง 🎉</p>
+            <p style={{ fontSize: 13, color: 'var(--text-hint)', textAlign: 'center', padding: 20 }}>ไม่มีงานค้าง</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {todayTodos.map((todo) => (
