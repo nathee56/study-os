@@ -1530,20 +1530,14 @@ button, a, input, .btn-primary, .btn-ghost {
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  border-radius: 18px 18px 0 0;
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
-.stat-card:nth-child(1)::before { background: linear-gradient(90deg, var(--accent), #FF9A5C); }
-.stat-card:nth-child(2)::before { background: linear-gradient(90deg, var(--violet), #A78BFA); }
-.stat-card:nth-child(3)::before { background: linear-gradient(90deg, var(--teal), #5EEAD4); }
-.stat-card:nth-child(4)::before { background: linear-gradient(90deg, var(--sky), #7DD3FC); }
+.stat-card:active {
+  transform: translateY(1px) scale(0.98);
+}
 
 /* ===== COLORFUL PROGRESS BAR ===== */
 .progress-bar-fill {
@@ -1609,12 +1603,165 @@ button, a, input, .btn-primary, .btn-ghost {
   background: var(--accent);
 }
 
-/* ===== GLOW ANIMATION ===== */
+/* =============================================
+   ANIMATION SYSTEM
+   ============================================= */
+
+/* --- Keyframes --- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes subtleGlow {
   0%, 100% { box-shadow: 0 0 12px rgba(255, 107, 26, 0.15); }
   50% { box-shadow: 0 0 20px rgba(255, 107, 26, 0.25); }
 }
 
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* --- Utility Classes --- */
+.animate-in {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade {
+  animation: fadeIn 0.3s ease both;
+}
+
+.animate-scale {
+  animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-bounce {
+  animation: bounceIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 .glow-accent {
   animation: subtleGlow 3s ease-in-out infinite;
+}
+
+/* --- Staggered children animation --- */
+.stagger-children > * {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 360ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 420ms; }
+
+/* --- Card hover lift --- */
+.card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s;
+}
+
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.07);
+  }
+}
+
+.card:active {
+  transform: translateY(1px) scale(0.98);
+  transition-duration: 0.1s;
+}
+
+/* --- Button press animation --- */
+.btn-primary, .btn-secondary, .btn-ghost {
+  transition: transform 0.15s ease, box-shadow 0.2s, opacity 0.2s, background 0.2s;
+}
+
+.btn-primary:active, .btn-secondary:active, .btn-ghost:active {
+  transform: scale(0.96);
+  transition-duration: 0.08s;
+}
+
+/* --- Pill filter tap animation --- */
+.pill {
+  transition: transform 0.15s ease, background 0.2s, color 0.2s;
+}
+
+.pill:active {
+  transform: scale(0.93);
+}
+
+/* --- FAB bounce on tap --- */
+.fab-button:active {
+  transform: scale(0.9);
+  transition: transform 0.1s ease;
+}
+
+/* --- Bottom nav bounce --- */
+.bottom-nav a {
+  transition: transform 0.15s ease;
+}
+.bottom-nav a:active {
+  transform: scale(0.88);
+}
+
+/* --- Shimmer loading skeleton --- */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-raised) 25%, var(--surface-card) 50%, var(--surface-raised) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 12px;
+}
+
+/* --- Float animation for empty state icons --- */
+.float-icon {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* --- Page transition feel --- */
+.page-content {
+  animation: fadeIn 0.25s ease both;
+}
+
+/* --- Reduce motion for accessibility --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

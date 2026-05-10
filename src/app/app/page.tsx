@@ -123,7 +123,7 @@ export default function DashboardPage() {
 
       {/* Mobile stats grid — colorful stat cards */}
       {isMobile && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 16 }} className="stagger-children">
           {statItems.map((stat, i) => (
             <div key={i} className="card stat-card mobile-card" style={{ textAlign: 'center', padding: 14, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {stat.isProgress ? (
@@ -141,7 +141,7 @@ export default function DashboardPage() {
       )}
 
       {/* Content Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 18 }} className="stagger-children">
         {/* Col 1: Today's Todos */}
         <div className="card mobile-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
