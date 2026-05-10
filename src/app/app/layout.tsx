@@ -56,8 +56,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         minHeight: '100vh', background: 'var(--bg)',
       }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-            <img src="/logo.png" alt="JamDai" style={{ height: 48, objectFit: 'contain' }} />
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+            <img src="/logo.png" alt="JamDai" style={{ height: 160, width: 'auto', maxWidth: '80vw', objectFit: 'contain' }} />
           </div>
           <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>กำลังโหลด...</p>
         </div>
