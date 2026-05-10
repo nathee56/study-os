@@ -12,13 +12,13 @@ export interface ChangelogEntry {
   }[];
 }
 
-export const CURRENT_VERSION = '2.1.0';
+export const CURRENT_VERSION = '2.1.1';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
-    version: '2.1.0',
+    version: '2.1.1',
     date: '2026-05-10',
-    title: 'AI ฉลาดขึ้น + แจ้งเตือนอัจฉริยะ',
+    title: 'AI ฉลาดขึ้น + แจ้งเตือน + หน้ามีอะไรใหม่',
     highlights: [
       {
         emoji: '🧠',

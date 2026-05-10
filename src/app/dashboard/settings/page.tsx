@@ -8,6 +8,8 @@ import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useAIMemory } from '@/lib/hooks/useAIMemory';
 import { IconSun, IconMoon, IconLogOut, IconUser, IconCloud, IconDownload, IconAlertCircle } from '@/components/ui/Icons';
 import { useState } from 'react';
+import Link from 'next/link';
+import { CURRENT_VERSION } from '@/lib/changelog';
 
 export default function SettingsPage() {
   const { user, signOut, signIn, googleAccessToken } = useAuth();
@@ -339,9 +341,16 @@ export default function SettingsPage() {
       <div className="card" style={{ marginBottom: 16 }}>
         <h3 style={{ fontSize: 16, marginBottom: 16 }}>เกี่ยวกับ</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
-          <div>JamDai v1.0</div>
+          <div>JamDai v{CURRENT_VERSION}</div>
           <div>Productivity Workspace สำหรับทุกคน</div>
           <div>จัดการชีวิตและการทำงานอย่างชาญฉลาด</div>
+          <Link href="/dashboard/whats-new" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            color: 'var(--orange)', fontSize: 13, fontWeight: 600,
+            textDecoration: 'none', marginTop: 4,
+          }}>
+            🆕 ดูว่ามีอะไรใหม่
+          </Link>
           <div style={{ color: 'var(--text-hint)', fontSize: 11, marginTop: 4 }}>
             สร้างโดย รพีพัฒน์ กวางทอง
           </div>
