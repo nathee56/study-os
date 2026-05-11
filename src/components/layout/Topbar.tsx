@@ -227,8 +227,19 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
           boxShadow: '4px 0 24px rgba(0,0,0,0.15)',
         }}>
           <div style={{ padding: '24px 16px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
               <img src="/logo.png" alt="JamDai" style={{ height: 40, objectFit: 'contain' }} />
+              <span style={{ 
+                background: 'var(--orange)', 
+                color: 'white', 
+                fontSize: '8px', 
+                padding: '1px 5px', 
+                borderRadius: '8px',
+                fontWeight: 700,
+                marginLeft: 4,
+                boxShadow: '0 2px 4px rgba(255, 107, 26, 0.2)',
+                transform: 'rotate(5deg)'
+              }}>BETA</span>
             </div>
             <button className="btn-icon" onClick={() => setIsMenuOpen(false)} style={{ width: 44, height: 44, borderRadius: 999, background: 'var(--surface-raised)' }}>
               <IconX size={20} />

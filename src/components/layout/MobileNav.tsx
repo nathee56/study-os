@@ -17,7 +17,7 @@ export default function MobileNav() {
   const basePath = isNU ? '/dashboard' : '/app';
 
   const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
+    if (href === '/dashboard' || href === '/app') return pathname === href;
     return pathname.startsWith(href);
   };
 

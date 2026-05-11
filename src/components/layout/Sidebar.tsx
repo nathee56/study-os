@@ -68,8 +68,21 @@ export default function Sidebar() {
       {/* Logo */}
       <div style={{ padding: isCollapsed ? '24px 8px 16px' : '24px 16px 16px', display: 'flex', justifyContent: 'center' }}>
         {!isCollapsed ? (
-          <div className="sidebar-logo-text" style={{ padding: '0 8px', display: 'flex', alignItems: 'center' }}>
+          <div className="sidebar-logo-text" style={{ padding: '0 8px', display: 'flex', alignItems: 'center', position: 'relative' }}>
             <img src="/logo.png" alt="JamDai" style={{ height: 56, objectFit: 'contain' }} />
+            <span style={{ 
+              position: 'absolute', 
+              top: 0, 
+              right: -5, 
+              background: 'var(--orange)', 
+              color: 'white', 
+              fontSize: '10px', 
+              padding: '2px 6px', 
+              borderRadius: '10px',
+              fontWeight: 700,
+              boxShadow: '0 2px 4px rgba(255, 107, 26, 0.3)',
+              transform: 'rotate(5deg)'
+            }}>BETA</span>
           </div>
         ) : (
           <div className="sidebar-logo-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: '12px', background: 'var(--orange-light)' }}>
