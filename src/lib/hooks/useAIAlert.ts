@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export interface AIAlert {
   type: 'deadline' | 'class' | 'reminder' | 'insight';
@@ -27,11 +27,16 @@ export function useAIAlert(context: {
   const USER_CACHE_KEY = `${CACHE_KEY}_${context.userId}`;
   const USER_CACHE_TIME_KEY = `${CACHE_TIME_KEY}_${context.userId}`;
 
+  const lastFetchedTodos = useRef('');
+
   useEffect(() => {
     if (!context.enabled || !context.userId) {
       if (!context.enabled) setAlerts([]);
       return;
     }
+
+    // Skip if todos haven't changed meaningfully since last fetch
+    if (context.todos === lastFetchedTodos.current) return;
 
     // Check cache first
     const cachedTime = sessionStorage.getItem(USER_CACHE_TIME_KEY);
@@ -42,6 +47,7 @@ export function useAIAlert(context: {
       if (elapsed < COOLDOWN_MS) {
         try {
           setAlerts(JSON.parse(cachedAlerts));
+          lastFetchedTodos.current = context.todos;
         } catch { /* ignore */ }
         return;
       }
@@ -72,6 +78,7 @@ export function useAIAlert(context: {
           const data = await res.json();
           const newAlerts = data.alerts || [];
           setAlerts(newAlerts);
+          lastFetchedTodos.current = context.todos;
 
           // Cache results
           sessionStorage.setItem(USER_CACHE_KEY, JSON.stringify(newAlerts));

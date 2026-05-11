@@ -3,6 +3,7 @@
 import { useTodos } from '@/lib/hooks/useTodos';
 import { useNotes } from '@/lib/hooks/useNotes';
 import { useAuth } from '@/lib/hooks/useAuth';
+import { useSchedule } from '@/lib/hooks/useSchedule';
 import { IconCheckSquare, IconFileText, IconSparkle, IconSend, IconExternalLink, IconClock, IconCloud, IconMessageCircle } from '@/components/ui/Icons';
 import PWACapsule from '@/components/ui/PWACapsule';
 import AIAlertCard from '@/components/ui/AIAlertCard';
@@ -24,6 +25,8 @@ export default function DashboardPage() {
   const { notes } = useNotes();
   const { getMemoryPrompt } = useAIMemory();
   const { user, isLocalMode } = useAuth();
+  const { schedule, getTodayClasses } = useSchedule();
+  const todayClasses = useMemo(() => getTodayClasses(), [getTodayClasses]);
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [localName, setLocalName] = useState('');
@@ -128,6 +131,10 @@ export default function DashboardPage() {
       {/* New AI Banner Summary System */}
       <AIBanner 
         pendingCount={pendingTodos.length}
+        todos={pendingTodos}
+        todayClasses={todayClasses}
+        notes={notes}
+        memories={getMemoryPrompt()}
         alerts={aiAlerts}
         loading={alertsLoading}
         onDismiss={dismissAlert}

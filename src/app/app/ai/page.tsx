@@ -73,7 +73,7 @@ export default function AIPage() {
       sessionStorage.removeItem('ai_initial_query');
       handleSend(initialQuery);
     }
-  }, []);
+  }, [handleSend]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -85,7 +85,7 @@ export default function AIPage() {
     reader.readAsText(file);
   };
 
-  const handleSend = async (text?: string) => {
+  const handleSend = useCallback(async (text?: string) => {
     const msg = text || input.trim();
     if (!msg && !fileContext) return;
 
@@ -111,7 +111,7 @@ export default function AIPage() {
       console.error(err);
       alert('AI ไม่ตอบสนอง โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตหรือ API Key ในระบบ');
     }
-  };
+  }, [input, fileContext, activeChat, model, createChat, sendMessage, systemPrompt]);
 
   const handleNewChat = async () => {
     const selectedModel = model === 'auto' ? MODELS['openthaigpt'] : MODELS[model];
