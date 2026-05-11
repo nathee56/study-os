@@ -46,22 +46,13 @@ export default function NotesPage() {
     <div className="animate-in">
       <style>{`
         .note-card-enhanced {
-          border-radius: 24px !important;
+          border-radius: 20px !important;
           overflow: hidden;
-          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
+          transition: border-color 0.2s ease;
           box-shadow: none !important;
         }
         .note-card-enhanced:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(0,0,0,0.04) !important;
-        }
-        .note-card-enhanced:active {
-          transform: translateY(1px) scale(0.98);
-          box-shadow: none !important;
-        }
-        .search-container:focus-within {
-          transform: scale(1.01);
-          transition: transform 0.2s;
+          border-color: var(--border-strong);
         }
         .filter-scroll::-webkit-scrollbar {
           display: none;

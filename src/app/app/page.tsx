@@ -109,12 +109,12 @@ export default function DashboardPage() {
         <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 2 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: isMobile ? 14 : 16 }}>
             <div style={{ 
-              width: 44, height: 44, borderRadius: 999, 
-              background: 'rgba(255,255,255,0.2)',
+              width: 38, height: 38, borderRadius: 14, 
+              background: 'rgba(255,255,255,0.15)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
-              flexShrink: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+              flexShrink: 0,
             }}>
-              <IconSparkle size={20} />
+              <IconSparkle size={18} />
             </div>
             <div style={{ flex: 1 }}>
               <h3 style={{ fontSize: 16, marginBottom: 4, fontWeight: 600, color: '#fff' }}>สรุปภาพรวมวันนี้</h3>
@@ -149,16 +149,16 @@ export default function DashboardPage() {
                 label: 'ความคืบหน้า' 
               },
             ].map((stat, i) => (
-              <div key={i} style={{ textAlign: 'center', padding: '0 18px', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.15)' : 'none', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div key={i} style={{ textAlign: 'center', padding: '0 18px', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.12)' : 'none', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {stat.isProgress ? (
                   <div style={{ marginBottom: 4 }}>
-                    <AnimatedProgressCircle progress={progressPct} size={20} strokeWidth={2.5} />
+                    <AnimatedProgressCircle progress={progressPct} size={18} strokeWidth={2} />
                   </div>
                 ) : stat.icon ? (
-                  <stat.icon size={16} style={{ color: 'rgba(255,255,255,0.85)', marginBottom: 4 }} />
+                  <stat.icon size={14} style={{ color: 'rgba(255,255,255,0.7)', marginBottom: 4 }} />
                 ) : null}
-                <div style={{ fontSize: 26, fontWeight: 700, color: '#fff' }}>{stat.value}</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', whiteSpace: 'nowrap' }}>{stat.label}</div>
+                <div style={{ fontSize: 22, fontWeight: 600, color: '#fff' }}>{stat.value}</div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>{stat.label}</div>
               </div>
             ))}
           </div>
@@ -177,8 +177,8 @@ export default function DashboardPage() {
               ) : stat.icon ? (
                 <stat.icon size={18} style={{ color: stat.color, marginBottom: 4 }} />
               ) : null}
-              <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>{stat.value}</div>
-              <div style={{ fontSize: 11, color: 'var(--text-hint)' }}>{stat.label}</div>
+              <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text-primary)' }}>{stat.value}</div>
+              <div style={{ fontSize: 10, color: 'var(--text-hint)' }}>{stat.label}</div>
             </div>
           ))}
         </div>
@@ -224,7 +224,7 @@ export default function DashboardPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                     {todayTodos.map((todo) => (
                       <div key={todo.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '0.5px solid var(--border)' }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: todo.priority === 'urgent' ? 'var(--danger)' : 'var(--accent)', flexShrink: 0, boxShadow: `0 0 6px ${todo.priority === 'urgent' ? 'rgba(244,63,94,0.3)' : 'rgba(255,107,26,0.3)'}` }} />
+                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: todo.priority === 'urgent' ? 'var(--danger)' : 'var(--accent)', flexShrink: 0 }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 13, fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{todo.title}</div>
                           {todo.subject && <span className="pill pill-neutral" style={{ marginTop: 3, fontSize: 9 }}>{todo.subject}</span>}

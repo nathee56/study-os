@@ -264,7 +264,7 @@ export default function TodoPage() {
         )}
 
         {/* Add Row */}
-        <div className="card" style={{ marginTop: 24, padding: 20, background: 'var(--cream)' }}>
+        <div className="card" style={{ marginTop: 24, padding: 20 }}>
           <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>เพิ่มงานใหม่</div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 10, marginBottom: 10 }}>
             <input className="input" placeholder="หัวข้อวิชา/งาน..." value={newTitle}

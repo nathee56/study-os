@@ -1499,80 +1499,69 @@ button, a, input, .btn-primary, .btn-ghost {
   display: none;
 }
 
-/* ===== VIBRANT AI SUMMARY BANNER ===== */
+/* ===== AI SUMMARY BANNER ===== */
 .ai-banner {
-  background: linear-gradient(135deg, #FF6B1A 0%, #FF9A5C 40%, #FFB366 70%, #FFD19A 100%);
+  background: linear-gradient(135deg, #FF6B1A 0%, #FF9A5C 100%);
   border: none !important;
   color: #fff;
   position: relative;
   overflow: hidden;
+  border-radius: 20px;
 }
 
 .ai-banner::before {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  top: -40%;
+  right: -15%;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
 
 .ai-banner::after {
-  content: '';
-  position: absolute;
-  bottom: -30%;
-  left: -10%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
+  display: none;
 }
 
 [data-theme="dark"] .ai-banner {
-  background: linear-gradient(135deg, #1E293B 0%, #2D1F0A 40%, #331E08 70%, #1E293B 100%);
-  border: 1px solid rgba(255,138,51,0.3) !important;
+  background: linear-gradient(135deg, #1A1F2E 0%, #2A1A0A 100%);
+  border: 1px solid rgba(255,138,51,0.2) !important;
 }
 
 .ai-banner .input {
-  background: rgba(255,255,255,0.2) !important;
-  border-color: rgba(255,255,255,0.3) !important;
+  background: rgba(255,255,255,0.15) !important;
+  border-color: rgba(255,255,255,0.2) !important;
   color: #fff !important;
+  border-radius: 14px !important;
 }
 
 .ai-banner .input::placeholder {
-  color: rgba(255,255,255,0.7) !important;
+  color: rgba(255,255,255,0.6) !important;
 }
 
 .ai-banner .input:focus {
-  background: rgba(255,255,255,0.3) !important;
-  border-color: rgba(255,255,255,0.5) !important;
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.15) !important;
+  background: rgba(255,255,255,0.22) !important;
+  border-color: rgba(255,255,255,0.35) !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1) !important;
 }
 
-/* ===== VIBRANT STAT CARD ===== */
+/* ===== STAT CARD ===== */
 .stat-card {
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
+  transition: border-color 0.2s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  border-color: var(--border-strong);
 }
 
-.stat-card:active {
-  transform: translateY(1px) scale(0.98);
-}
-
-/* ===== COLORFUL PROGRESS BAR ===== */
+/* ===== PROGRESS BAR ===== */
 .progress-bar-fill {
-  background: linear-gradient(90deg, var(--accent), #FF9A5C, var(--amber)) !important;
-  box-shadow: 0 0 8px rgba(255, 107, 26, 0.3);
+  background: var(--accent) !important;
+  box-shadow: none;
 }
 
 /* ===== MOBILE HAMBURGER VISIBLE ===== */
@@ -1588,37 +1577,24 @@ button, a, input, .btn-primary, .btn-ghost {
   }
 }
 
-/* ===== NOTE CARDS COLORFUL ACCENT ===== */
+/* ===== NOTE CARDS ===== */
 .note-card {
   position: relative;
   overflow: hidden;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s, border-color 0.2s !important;
+  transition: border-color 0.2s ease !important;
 }
 
 .note-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent), var(--violet), var(--teal));
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.note-card:hover::after {
-  opacity: 1;
+  display: none;
 }
 
 .note-card:hover {
-  transform: translateY(-4px) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1) !important;
+  border-color: var(--border-strong) !important;
 }
 
-/* ===== COLORFUL SIDEBAR ACTIVE ===== */
+/* ===== SIDEBAR ACTIVE ===== */
 .nav-item.active {
-  background: linear-gradient(135deg, var(--accent-soft), rgba(139, 92, 246, 0.06));
+  background: var(--accent-soft);
   position: relative;
 }
 

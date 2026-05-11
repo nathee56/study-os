@@ -1,80 +1,9 @@
-'use client';
+﻿const fs = require('fs');
+const file = "src/app/app/settings/page.tsx";
+let content = fs.readFileSync(file, 'utf8');
 
-import { useAuth } from '@/lib/hooks/useAuth';
-import { useTheme } from '@/lib/hooks/useTheme';
-import { usePWA } from '@/lib/hooks/usePWA';
-import { usePin } from '@/lib/hooks/usePin';
-import { useNotifications } from '@/lib/hooks/useNotifications';
-import { useAIMemory } from '@/lib/hooks/useAIMemory';
-import { IconSun, IconMoon, IconLogOut, IconUser, IconCloud, IconDownload, IconAlertCircle } from '@/components/ui/Icons';
-import { useState } from 'react';
-import Link from 'next/link';
-import { CURRENT_VERSION } from '@/lib/changelog';
-
-export default function SettingsPage() {
-  const { user, signOut, signIn, googleAccessToken } = useAuth();
-  const { theme, toggleTheme } = useTheme();
-  const { installPrompt, isInstalled, installApp } = usePWA();
-  const { hasPin, setPin, verifyPin, clearPin } = usePin();
-  const { isSupported: notifSupported, isSubscribed, subscribe, unsubscribe } = useNotifications();
-  const { memories, deleteMemory, clearAllMemories } = useAIMemory();
-
-  const [showPinForm, setShowPinForm] = useState(false);
-  const [currentPin, setCurrentPin] = useState('');
-  const [newPin, setNewPin] = useState('');
-  const [confirmPin, setConfirmPin] = useState('');
-  const [pinMsg, setPinMsg] = useState('');
-  const [pinError, setPinError] = useState('');
-
-  const handleSetPin = async () => {
-    setPinError('');
-    if (newPin.length < 4 || newPin.length > 6) {
-      setPinError('รหัสผ่านต้อง 4-6 หลัก');
-      return;
-    }
-    if (!/^\d+$/.test(newPin)) {
-      setPinError('รหัสผ่านต้องเป็นตัวเลขเท่านั้น');
-      return;
-    }
-    if (newPin !== confirmPin) {
-      setPinError('รหัสผ่านไม่ตรงกัน');
-      return;
-    }
-    if (hasPin) {
-      const ok = await verifyPin(currentPin);
-      if (!ok) {
-        setPinError('รหัสผ่านเดิมไม่ถูกต้อง');
-        return;
-      }
-    }
-    await setPin(newPin);
-    setPinMsg('ตั้งรหัสผ่านสำเร็จ');
-    setShowPinForm(false);
-    setCurrentPin('');
-    setNewPin('');
-    setConfirmPin('');
-    setTimeout(() => setPinMsg(''), 3000);
-  };
-
-  const handleRemovePin = async () => {
-    setPinError('');
-    if (hasPin) {
-      const ok = await verifyPin(currentPin);
-      if (!ok) {
-        setPinError('รหัสผ่านเดิมไม่ถูกต้อง');
-        return;
-      }
-    }
-    await clearPin();
-    setPinMsg('ลบรหัสผ่านสำเร็จ');
-    setShowPinForm(false);
-    setCurrentPin('');
-    setTimeout(() => setPinMsg(''), 3000);
-  };
-
-  return (
-        <div className="animate-in" style={{ maxWidth: 640, margin: '0 auto' }}>
-      <style>{`
+const newJSX = `    <div className="animate-in" style={{ maxWidth: 640, margin: '0 auto' }}>
+      <style>{\`
         .settings-group {
           background: var(--surface-card);
           border: 1px solid var(--border);
@@ -121,7 +50,7 @@ export default function SettingsPage() {
           margin-left: 16px;
           margin-bottom: 8px;
         }
-      `}</style>
+      \`}</style>
 
       <div className="settings-section-title">บัญชีผู้ใช้</div>
       <div className="settings-group">
@@ -193,7 +122,7 @@ export default function SettingsPage() {
                     inputMode="numeric"
                     maxLength={6}
                     value={currentPin}
-                    onChange={(e) => { setCurrentPin(e.target.value.replace(/\D/g, '')); setPinError(''); }}
+                    onChange={(e) => { setCurrentPin(e.target.value.replace(/\\D/g, '')); setPinError(''); }}
                     placeholder="●●●●"
                     className="input"
                     style={{ textAlign: 'center', fontSize: 20, letterSpacing: 8 }}
@@ -210,7 +139,7 @@ export default function SettingsPage() {
                   inputMode="numeric"
                   maxLength={6}
                   value={newPin}
-                  onChange={(e) => { setNewPin(e.target.value.replace(/\D/g, '')); setPinError(''); }}
+                  onChange={(e) => { setNewPin(e.target.value.replace(/\\D/g, '')); setPinError(''); }}
                   placeholder="●●●●"
                   className="input"
                   style={{ textAlign: 'center', fontSize: 20, letterSpacing: 8 }}
@@ -226,7 +155,7 @@ export default function SettingsPage() {
                   inputMode="numeric"
                   maxLength={6}
                   value={confirmPin}
-                  onChange={(e) => { setConfirmPin(e.target.value.replace(/\D/g, '')); setPinError(''); }}
+                  onChange={(e) => { setConfirmPin(e.target.value.replace(/\\D/g, '')); setPinError(''); }}
                   placeholder="●●●●"
                   className="input"
                   style={{ textAlign: 'center', fontSize: 20, letterSpacing: 8 }}
@@ -388,6 +317,7 @@ export default function SettingsPage() {
           <IconLogOut size={16} /> ออกจากระบบ
         </button>
       </div>
-    </div>
-  );
-}
+    </div>`;
+
+content = content.replace(/<div className="animate-in" style={{ maxWidth: 600 }}>[\s\S]*<\/div>/, newJSX);
+fs.writeFileSync(file, content, 'utf8');
