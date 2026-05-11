@@ -100,11 +100,12 @@ export default function DashboardPage() {
 
   // AI Proactive Alerts
   const alertContext = useMemo(() => ({
+    userId: user?.uid || (isLocalMode ? 'local' : ''),
     todos: pendingTodos.map(t => `${t.title} (ส่ง: ${t.dueDate?.toLocaleDateString('th-TH') || '-'})`).join(', '),
     schedule: todayClasses.map(c => `${c.name} ${c.startTime}-${c.endTime}`).join(', '),
     memories: getMemoryPrompt(),
     enabled: pendingTodos.length > 0 || todayClasses.length > 0,
-  }), [pendingTodos, todayClasses, getMemoryPrompt]);
+  }), [user?.uid, isLocalMode, pendingTodos, todayClasses, getMemoryPrompt]);
   const { alerts: aiAlerts, loading: alertsLoading, dismissAlert } = useAIAlert(alertContext);
 
   const aiTools = [
