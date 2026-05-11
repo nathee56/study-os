@@ -15,23 +15,48 @@ interface AIBannerProps {
 export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: AIBannerProps) {
   const [input, setInput] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
   const router = useRouter();
 
-  const handleAskAI = (e?: React.FormEvent) => {
+  const handleAskAI = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isTyping) return;
     
-    // Store input in session and redirect to AI page
-    sessionStorage.setItem('ai_initial_query', input.trim());
-    router.push('/app/ai');
+    const query = input.trim();
+    setInput('');
+    setIsTyping(true);
+    setIsExpanded(true);
+    setAiResponse(null);
+
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: query }]
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setAiResponse(data.content);
+      } else {
+        setAiResponse('ขออภัยครับ เกิดข้อผิดพลาดในการเชื่อมต่อกับ AI');
+      }
+    } catch (err) {
+      setAiResponse('ไม่สามารถติดต่อ AI ได้ในขณะนี้');
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   return (
     <div className="ai-banner-container animate-in">
       <div 
         className={`ai-banner ${isExpanded ? 'expanded' : ''}`}
-        onClick={() => alerts.length > 0 && setIsExpanded(!isExpanded)}
-        style={{ cursor: alerts.length > 0 ? 'pointer' : 'default' }}
+        onClick={() => (alerts.length > 0 || aiResponse) && setIsExpanded(!isExpanded)}
+        style={{ cursor: (alerts.length > 0 || aiResponse) ? 'pointer' : 'default' }}
       >
         <div className="ai-banner-content">
           <div className="ai-banner-header">
@@ -42,45 +67,67 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
               <h2>สรุปภาพรวมวันนี้</h2>
               <p>คุณมีงานค้าง {pendingCount} รายการ</p>
             </div>
-            {alerts.length > 0 && (
+            {(alerts.length > 0 || aiResponse || isTyping) && (
               <div className={`expand-indicator ${isExpanded ? 'active' : ''}`}>
                  <IconChevronDown size={24} />
               </div>
             )}
           </div>
 
-          {isExpanded && alerts.length > 0 && (
+          {isExpanded && (alerts.length > 0 || aiResponse || isTyping) && (
             <div className="ai-expanded-content">
               <div className="ai-divider" />
-              <div className="ai-alerts-list">
-                {alerts.map((alert, i) => (
-                  <div key={i} className={`ai-alert-item urgency-${alert.urgency}`}>
-                    <div className="ai-alert-type-icon">
-                       {alert.type === 'deadline' ? <IconClock size={16} /> : <IconSparkle size={16} />}
+              
+              {/* AI Real-time Response */}
+              {(aiResponse || isTyping) && (
+                <div className="ai-chat-response">
+                   <div className="ai-response-header">
+                      <IconSparkle size={14} /> <span>คำตอบจาก AI</span>
+                   </div>
+                   <div className="ai-response-body">
+                      {isTyping ? (
+                        <div className="typing-indicator-small">
+                          <span></span><span></span><span></span>
+                        </div>
+                      ) : (
+                        <p>{aiResponse}</p>
+                      )}
+                   </div>
+                </div>
+              )}
+
+              {/* Static Proactive Alerts */}
+              {alerts.length > 0 && (
+                <div className="ai-alerts-list">
+                  {alerts.map((alert, i) => (
+                    <div key={i} className={`ai-alert-item urgency-${alert.urgency}`}>
+                      <div className="ai-alert-type-icon">
+                         {alert.type === 'deadline' ? <IconClock size={16} /> : <IconSparkle size={16} />}
+                      </div>
+                      <div className="ai-alert-msg-box">
+                        <div className="ai-alert-main-msg">{alert.message}</div>
+                        <div className="ai-alert-sub-details">{alert.details}</div>
+                      </div>
                     </div>
-                    <div className="ai-alert-msg-box">
-                      <div className="ai-alert-main-msg">{alert.message}</div>
-                      <div className="ai-alert-sub-details">{alert.details}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
               <div className="ai-divider" />
             </div>
           )}
 
           <form onSubmit={handleAskAI} className="ai-banner-input-wrapper" onClick={(e) => e.stopPropagation()}>
             <div className="ai-banner-input-inner">
-              <IconSearch size={18} className="ai-input-icon" />
+              <IconSearch size={16} className="ai-input-icon" />
               <input 
                 type="text" 
-                placeholder="ถาม AI เกี่ยวกับงานของคุณ..." 
+                placeholder="ถาม AI ได้ที่นี่..." 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 className="ai-banner-input"
               />
-              <button type="submit" className="ai-banner-send">
-                <IconSend size={18} />
+              <button type="submit" className="ai-banner-send" disabled={isTyping}>
+                {isTyping ? '...' : <IconSend size={16} />}
               </button>
             </div>
           </form>
@@ -95,7 +142,7 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
         .ai-banner {
           background: linear-gradient(135deg, #FF6B1A 0%, #FF9A5C 100%);
           border-radius: 32px;
-          padding: 30px;
+          padding: 26px;
           color: white;
           position: relative;
           overflow: hidden;
@@ -103,15 +150,14 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .ai-banner.expanded {
-           box-shadow: 0 20px 60px rgba(255, 107, 26, 0.35);
-           transform: scale(1.01);
+        [data-theme="dark"] .ai-banner {
+          background: linear-gradient(135deg, #E65100 0%, #FF9800 100%);
+          box-shadow: 0 12px 50px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        [data-theme="dark"] .ai-banner {
-          background: linear-gradient(135deg, #2A1A0A 0%, #1A1208 100%);
-          border: 1px solid rgba(255, 107, 26, 0.3);
-          box-shadow: 0 12px 50px rgba(0, 0, 0, 0.5);
+        .ai-banner.expanded {
+           box-shadow: 0 20px 60px rgba(255, 107, 26, 0.35);
         }
 
         .ai-banner::before {
@@ -121,7 +167,7 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
           right: -10%;
           width: 320px;
           height: 320px;
-          background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
           border-radius: 50%;
           pointer-events: none;
         }
@@ -134,13 +180,13 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
         .ai-banner-header {
           display: flex;
           align-items: center;
-          gap: 20px;
-          margin-bottom: 24px;
+          gap: 16px;
+          margin-bottom: 20px;
         }
 
         .ai-banner-icon {
-          width: 64px;
-          height: 64px;
+          width: 56px;
+          height: 56px;
           background: rgba(255, 255, 255, 0.25);
           backdrop-filter: blur(10px);
           border-radius: 50%;
@@ -153,7 +199,7 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
         }
 
         .ai-banner-text h2 {
-          font-size: 24px;
+          font-size: 22px;
           font-weight: 800;
           color: white;
           margin: 0;
@@ -161,7 +207,7 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
         }
 
         .ai-banner-text p {
-          font-size: 16px;
+          font-size: 15px;
           color: rgba(255, 255, 255, 0.95);
           margin: 4px 0 0;
           font-weight: 600;
@@ -176,7 +222,7 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
         }
 
         .ai-expanded-content {
-          margin-bottom: 24px;
+          margin-bottom: 20px;
           animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
@@ -186,10 +232,34 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
           margin: 16px 0;
         }
 
+        .ai-chat-response {
+          background: rgba(255, 255, 255, 0.15);
+          padding: 16px;
+          border-radius: 20px;
+          margin-bottom: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .ai-response-header {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 700;
+          margin-bottom: 8px;
+          opacity: 0.9;
+        }
+
+        .ai-response-body {
+          font-size: 14px;
+          line-height: 1.6;
+          font-weight: 500;
+        }
+
         .ai-alerts-list {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 12px;
         }
 
         .ai-alert-item {
@@ -197,7 +267,7 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
           gap: 12px;
           align-items: flex-start;
           background: rgba(255, 255, 255, 0.1);
-          padding: 14px;
+          padding: 12px;
           border-radius: 16px;
           border-left: 4px solid rgba(255, 255, 255, 0.4);
         }
@@ -208,8 +278,8 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
         }
 
         .ai-alert-type-icon {
-          width: 32px;
-          height: 32px;
+          width: 30px;
+          height: 30px;
           border-radius: 10px;
           background: rgba(255, 255, 255, 0.2);
           display: flex;
@@ -219,15 +289,19 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
         }
 
         .ai-alert-main-msg {
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 700;
-          margin-bottom: 4px;
+          margin-bottom: 2px;
         }
 
         .ai-alert-sub-details {
-          font-size: 13px;
+          font-size: 12px;
           color: rgba(255, 255, 255, 0.85);
-          line-height: 1.5;
+          line-height: 1.4;
+        }
+
+        .ai-banner-input-wrapper {
+          max-width: 320px;
         }
 
         .ai-banner-input-inner {
@@ -238,20 +312,19 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
           backdrop-filter: blur(15px);
           border: 1px solid rgba(255, 255, 255, 0.3);
           border-radius: 999px;
-          padding: 6px 6px 6px 20px;
+          padding: 4px 4px 4px 16px;
           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .ai-banner-input-inner:focus-within {
           background: rgba(255, 255, 255, 0.3);
           border-color: rgba(255, 255, 255, 0.5);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-          transform: translateY(-2px);
+          transform: translateY(-1px);
         }
 
         .ai-input-icon {
           color: rgba(255, 255, 255, 0.8);
-          margin-right: 14px;
+          margin-right: 10px;
         }
 
         .ai-banner-input {
@@ -259,10 +332,10 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
           background: transparent;
           border: none;
           color: white;
-          font-size: 16px;
+          font-size: 14px;
           font-weight: 600;
           outline: none;
-          height: 48px;
+          height: 36px;
         }
 
         .ai-banner-input::placeholder {
@@ -270,8 +343,8 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
         }
 
         .ai-banner-send {
-          width: 48px;
-          height: 48px;
+          width: 36px;
+          height: 36px;
           background: white;
           color: var(--accent);
           border: none;
@@ -280,8 +353,29 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .typing-indicator-small {
+          display: flex;
+          gap: 4px;
+          padding: 4px 0;
+        }
+        .typing-indicator-small span {
+          width: 6px;
+          height: 6px;
+          background: white;
+          border-radius: 50%;
+          animation: typing 1s infinite ease-in-out;
+          opacity: 0.6;
+        }
+        .typing-indicator-small span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator-small span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); opacity: 1; }
         }
 
         @keyframes slideDown {
@@ -290,11 +384,12 @@ export default function AIBanner({ pendingCount, alerts, loading, onDismiss }: A
         }
 
         @media (max-width: 768px) {
-          .ai-banner { padding: 24px; border-radius: 28px; }
-          .ai-banner-header { gap: 16px; }
-          .ai-banner-icon { width: 52px; height: 52px; }
-          .ai-banner-text h2 { font-size: 20px; }
-          .ai-banner-text p { font-size: 14px; }
+          .ai-banner { padding: 22px; border-radius: 28px; }
+          .ai-banner-header { gap: 12px; }
+          .ai-banner-icon { width: 48px; height: 48px; }
+          .ai-banner-text h2 { font-size: 18px; }
+          .ai-banner-text p { font-size: 13px; }
+          .ai-banner-input-wrapper { max-width: none; }
         }
       `}</style>
     </div>
