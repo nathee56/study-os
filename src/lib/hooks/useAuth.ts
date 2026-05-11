@@ -66,8 +66,15 @@ export function useAuth() {
       await firebaseSignOut(auth);
       setGoogleAccessToken(null);
       await removeGoogleToken(); // Remove token from server
+      
+      // Clear all application state to prevent leaks
       localStorage.removeItem('studyos_local_mode');
+      localStorage.removeItem('app_widget_order');
+      // Clear AI caches
+      sessionStorage.clear(); 
+      
       setIsLocalMode(false);
+      setUser(null);
     } catch (error) {
       console.error('Sign out error:', error);
     }

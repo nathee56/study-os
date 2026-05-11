@@ -27,7 +27,14 @@ export function useNotes() {
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (isLocalMode || !user) { setNotes([]); setLoading(false); return; }
+    // Immediate clear to prevent flash of old data
+    setNotes([]);
+    setLoading(true);
+
+    if (isLocalMode || !user) {
+      setLoading(false);
+      return;
+    }
     const q = query(collection(db, 'users', user.uid, 'notes'), orderBy('updatedAt', 'desc'));
     const unsub = onSnapshot(q, (snap) => {
       setNotes(snap.docs.map((d) => {
@@ -42,7 +49,7 @@ export function useNotes() {
       setLoading(false);
     });
     return () => unsub();
-  }, [user]);
+  }, [user, isLocalMode]);
 
   const addNote = useCallback(async (note: Partial<Note>) => {
     if (!user) return '';

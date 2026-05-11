@@ -14,6 +14,7 @@ const CACHE_KEY = 'jamdai_ai_alerts';
 const CACHE_TIME_KEY = 'jamdai_ai_alerts_time';
 
 export function useAIAlert(context: {
+  userId: string;
   todos: string;
   schedule: string;
   memories: string;
@@ -23,12 +24,18 @@ export function useAIAlert(context: {
   const [loading, setLoading] = useState(false);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
 
+  const USER_CACHE_KEY = `${CACHE_KEY}_${context.userId}`;
+  const USER_CACHE_TIME_KEY = `${CACHE_TIME_KEY}_${context.userId}`;
+
   useEffect(() => {
-    if (!context.enabled) return;
+    if (!context.enabled || !context.userId) {
+      if (!context.enabled) setAlerts([]);
+      return;
+    }
 
     // Check cache first
-    const cachedTime = sessionStorage.getItem(CACHE_TIME_KEY);
-    const cachedAlerts = sessionStorage.getItem(CACHE_KEY);
+    const cachedTime = sessionStorage.getItem(USER_CACHE_TIME_KEY);
+    const cachedAlerts = sessionStorage.getItem(USER_CACHE_KEY);
 
     if (cachedTime && cachedAlerts) {
       const elapsed = Date.now() - parseInt(cachedTime);
@@ -67,8 +74,8 @@ export function useAIAlert(context: {
           setAlerts(newAlerts);
 
           // Cache results
-          sessionStorage.setItem(CACHE_KEY, JSON.stringify(newAlerts));
-          sessionStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+          sessionStorage.setItem(USER_CACHE_KEY, JSON.stringify(newAlerts));
+          sessionStorage.setItem(USER_CACHE_TIME_KEY, Date.now().toString());
         }
       } catch (e) {
         console.error('Failed to fetch AI alerts:', e);
@@ -78,7 +85,7 @@ export function useAIAlert(context: {
     };
 
     fetchAlerts();
-  }, [context.enabled]); // Only re-fetch when enabled changes (page load)
+  }, [context.enabled, context.userId, context.todos]); 
 
   const dismissAlert = useCallback((index: number) => {
     setDismissed(prev => new Set(prev).add(alerts[index]?.message));

@@ -36,11 +36,16 @@ export function useTodos() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Immediate clear to prevent flash of old data
+    setTodos([]);
+    setLoading(true);
+
     if (isLocalMode || !user) {
-      setTodos([]);
       setLoading(false);
       return;
     }
+    
+    // ... rest of firestore logic ...
 
     const q = query(
       collection(db, 'users', user.uid, 'todos'),

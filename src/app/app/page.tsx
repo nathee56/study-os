@@ -95,11 +95,12 @@ export default function DashboardPage() {
 
   // AI Proactive Alerts
   const alertContext = useMemo(() => ({
+    userId: user?.uid || (isLocalMode ? 'local' : ''),
     todos: pendingTodos.map(t => `${t.title} (ส่ง: ${t.dueDate?.toLocaleDateString('th-TH') || '-'})`).join(', '),
     schedule: '',
     memories: getMemoryPrompt(),
     enabled: pendingTodos.length > 0,
-  }), [pendingTodos, getMemoryPrompt]);
+  }), [user?.uid, isLocalMode, pendingTodos, getMemoryPrompt]);
   const { alerts: aiAlerts, loading: alertsLoading, dismissAlert } = useAIAlert(alertContext);
 
   const aiTools = [
