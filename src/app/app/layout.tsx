@@ -104,6 +104,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             max-width: 100vw !important;
             padding: 16px !important;
           }
+          /* FORCE MOBILE NAV BLUR FIX */
+          .mobile-nav {
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+            backdrop-filter: blur(24px) saturate(180%) !important;
+            -webkit-transform: translate3d(0, 0, 0) !important;
+            transform: translate3d(0, 0, 0) !important;
+          }
+          [data-theme="dark"] .mobile-nav {
+            background-color: rgba(20, 25, 35, 0.65) !important;
+          }
         }
       ` }} />
 
