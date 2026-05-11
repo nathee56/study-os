@@ -66,6 +66,13 @@ export default function AIPage() {
         setFileContext({ name, content });
       }
     }
+
+    // Check for initial query from Dashboard banner
+    const initialQuery = sessionStorage.getItem('ai_initial_query');
+    if (initialQuery) {
+      sessionStorage.removeItem('ai_initial_query');
+      handleSend(initialQuery);
+    }
   }, []);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

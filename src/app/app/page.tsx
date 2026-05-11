@@ -17,6 +17,7 @@ import TaskProgressChart from '@/components/ui/TaskProgressChart';
 import DraggableWidgetCard from '@/components/ui/DraggableWidgetCard';
 import { Reorder } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import AIBanner from '@/components/ui/AIBanner';
 
 export default function DashboardPage() {
   const { todos } = useTodos();
@@ -117,58 +118,19 @@ export default function DashboardPage() {
     { isProgress: true, value: `${progressPct}%`, label: 'ความคืบหน้า', color: 'var(--sky)' },
     { icon: IconMessageCircle, value: 'AI', label: 'ผู้ช่วย AI', color: 'var(--violet)' },
   ];
-
+ 
   return (
     <div className="animate-in">
       <PWACapsule />
-      <AIAlertCard alerts={aiAlerts} loading={alertsLoading} onDismiss={dismissAlert} />
       <WhatsNewPopup />
-      {/* Clean Welcome Header */}
-      <div style={{ marginBottom: 24, padding: '0 4px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <div>
-          {isEditingName ? (
-            <form onSubmit={saveLocalName} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0, color: 'var(--text-primary)' }} className="apple-intel-text">
-                {getGreeting()},
-              </h1>
-              <input
-                autoFocus
-                type="text"
-                value={localName}
-                onChange={(e) => setLocalName(e.target.value)}
-                onBlur={() => localName.trim() && saveLocalName()}
-                placeholder="ชื่อของคุณ..."
-                style={{
-                  fontSize: 20, fontWeight: 700, background: 'transparent', border: 'none', borderBottom: '2px solid var(--accent)',
-                  color: 'var(--text-primary)', outline: 'none', padding: '0 4px', width: 140
-                }}
-              />
-            </form>
-          ) : (
-            <h1 
-              style={{ fontSize: 22, fontWeight: 700, marginBottom: 4, cursor: isLocalMode ? 'pointer' : 'default' }} 
-              className="apple-intel-text"
-              onClick={() => isLocalMode && setIsEditingName(true)}
-              title={isLocalMode ? 'แตะเพื่อเปลี่ยนชื่อ' : ''}
-            >
-              {getGreeting()}, {user?.displayName ? user.displayName.split(' ')[0] : (localName || 'คุณ')}
-            </h1>
-          )}
-          <p style={{ color: 'var(--text-secondary)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
-            {pendingTodos.length > 0 ? (
-              <>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-                คุณมีงานค้าง {pendingTodos.length} รายการที่ต้องจัดการ
-              </>
-            ) : (
-              <>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--teal)', display: 'inline-block' }} />
-                ยอดเยี่ยม! วันนี้ไม่มีงานค้าง พร้อมลุยวันใหม่
-              </>
-            )}
-          </p>
-        </div>
-      </div>
+
+      {/* New AI Banner Summary System */}
+      <AIBanner 
+        pendingCount={pendingTodos.length}
+        alerts={aiAlerts}
+        loading={alertsLoading}
+        onDismiss={dismissAlert}
+      />
 
       {/* Unified Stats Grid */}
       <div style={{ 
