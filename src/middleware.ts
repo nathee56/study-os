@@ -24,27 +24,19 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Handle Root Path
+  // Handle Root Path - Redirect everyone to the premium /app dashboard
   if (path === '/') {
-    if (tier === 'nu') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    } else {
-      return NextResponse.redirect(new URL('/app', request.url));
-    }
-  }
-
-  // Handle Protected Paths
-  if (path.startsWith('/dashboard') && tier !== 'nu') {
     return NextResponse.redirect(new URL('/app', request.url));
   }
 
-  if (path.startsWith('/app') && tier === 'nu') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Allow everyone to access /app, and redirect /dashboard (legacy) to /app
+  if (path.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/app', request.url));
   }
 
   // Redirect legacy root-level paths to tiered paths (e.g., /todo -> /dashboard/todo)
   if (!path.startsWith('/dashboard') && !path.startsWith('/app') && tier) {
-    const prefix = tier === 'nu' ? '/dashboard' : '/app';
+    const prefix = '/app';
     return NextResponse.redirect(new URL(`${prefix}${path}${request.nextUrl.search}`, request.url));
   }
 
