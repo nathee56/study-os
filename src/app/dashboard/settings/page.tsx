@@ -357,11 +357,50 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {/* Advanced Actions */}
+      <div className="card" style={{ marginBottom: 16, border: '1px solid var(--danger-light)' }}>
+        <h3 style={{ fontSize: 16, marginBottom: 16, color: 'var(--danger)' }}>จัดการข้อมูลและบัญชี</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <button 
+            className="btn-secondary" 
+            onClick={signIn}
+            style={{ width: '100%', justifyContent: 'center', height: 48 }}
+          >
+            <IconUser size={18} /> เข้าสู่ระบบ / เปลี่ยนบัญชี
+          </button>
+          
+          <button 
+            className="btn-ghost" 
+            onClick={() => {
+              if (confirm('⚠️ คำเตือน: คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลทั้งหมด? (งาน, โน้ต และความจำ AI จะถูกลบถาวรและไม่สามารถกู้คืนได้)')) {
+                // Clear local storage and session
+                localStorage.clear();
+                sessionStorage.clear();
+                // We'll also trigger a sign out to be safe
+                signOut();
+                alert('ลบข้อมูลสำเร็จแล้ว ระบบกำลังเริ่มต้นใหม่');
+                window.location.href = '/';
+              }
+            }}
+            style={{ width: '100%', justifyContent: 'center', color: 'var(--danger)', height: 48 }}
+          >
+            <IconTrash size={18} /> ลบข้อมูลทั้งหมด
+          </button>
+        </div>
+      </div>
+
       {/* Logout */}
       <button className="btn-ghost" onClick={signOut}
-        style={{ width: '100%', justifyContent: 'center', color: 'var(--danger)', borderColor: 'var(--danger)', padding: 14 }}>
+        style={{ width: '100%', justifyContent: 'center', color: 'var(--text-secondary)', padding: 14 }}>
         <IconLogOut size={16} /> ออกจากระบบ
       </button>
+
+      <style jsx>{`
+        :global(.nav-item), :global(.mobile-nav-item), :global(.fab), :global(button), :global(a) {
+          pointer-events: auto !important;
+          cursor: pointer !important;
+        }
+      `}</style>
     </div>
   );
 }

@@ -2090,6 +2090,18 @@ button, a, input, .btn-primary, .btn-ghost {
   animation: fadeIn 0.1s ease both;
 }
 
+/* --- Emergency Navigation Fix --- */
+.nav-item, .mobile-nav-item, .fab, button, a, input, select, textarea {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 60; /* Ensure they are above content-masks */
+}
+
+/* Ensure main area is not blocking clicks */
+.main-area, .page-content {
+  pointer-events: auto !important;
+}
+
 /* --- Reduce motion for accessibility --- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
