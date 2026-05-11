@@ -57,6 +57,34 @@ export default function AIPage() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeChat?.messages, sending]);
 
+  const handleSend = useCallback(async (text?: string) => {
+    const msg = text || input.trim();
+    if (!msg && !fileContext) return;
+
+    let chatId = activeChat?.id;
+    if (!chatId) {
+      chatId = await createChat(model === 'auto' ? MODELS['openthaigpt'] : MODELS[model]);
+    }
+    if (!chatId) return;
+
+    setInput('');
+    let finalContent = msg;
+    if (fileContext) {
+      finalContent = msg 
+        ? `คำสั่ง/คำถาม: ${msg}\n\nเนื้อหาจากไฟล์ "${fileContext.name}":\n\n${fileContext.content}`
+        : `กรุณาสรุปเนื้อหาจากไฟล์ "${fileContext.name}" นี้ให้หน่อย:\n\n${fileContext.content}`;
+      setFileContext(null);
+    }
+
+    const selectedModel = model === 'auto' ? MODELS[recommendModel(msg || 'summarize')] : MODELS[model];
+    try {
+      await sendMessage(chatId, finalContent, selectedModel, systemPrompt);
+    } catch (err) {
+      console.error(err);
+      alert('AI ไม่ตอบสนอง โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตหรือ API Key ในระบบ');
+    }
+  }, [input, fileContext, activeChat, model, createChat, sendMessage, systemPrompt]);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('fromFile') === 'true') {
@@ -85,33 +113,6 @@ export default function AIPage() {
     reader.readAsText(file);
   };
 
-  const handleSend = useCallback(async (text?: string) => {
-    const msg = text || input.trim();
-    if (!msg && !fileContext) return;
-
-    let chatId = activeChat?.id;
-    if (!chatId) {
-      chatId = await createChat(model === 'auto' ? MODELS['openthaigpt'] : MODELS[model]);
-    }
-    if (!chatId) return;
-
-    setInput('');
-    let finalContent = msg;
-    if (fileContext) {
-      finalContent = msg 
-        ? `คำสั่ง/คำถาม: ${msg}\n\nเนื้อหาจากไฟล์ "${fileContext.name}":\n\n${fileContext.content}`
-        : `กรุณาสรุปเนื้อหาจากไฟล์ "${fileContext.name}" นี้ให้หน่อย:\n\n${fileContext.content}`;
-      setFileContext(null);
-    }
-
-    const selectedModel = model === 'auto' ? MODELS[recommendModel(msg || 'summarize')] : MODELS[model];
-    try {
-      await sendMessage(chatId, finalContent, selectedModel, systemPrompt);
-    } catch (err) {
-      console.error(err);
-      alert('AI ไม่ตอบสนอง โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตหรือ API Key ในระบบ');
-    }
-  }, [input, fileContext, activeChat, model, createChat, sendMessage, systemPrompt]);
 
   const handleNewChat = async () => {
     const selectedModel = model === 'auto' ? MODELS['openthaigpt'] : MODELS[model];
