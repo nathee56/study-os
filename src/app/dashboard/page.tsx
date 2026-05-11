@@ -131,6 +131,10 @@ export default function DashboardPage() {
       <PWACapsule />
       <AIBanner 
         pendingCount={pendingTodos.length} 
+        todos={pendingTodos}
+        todayClasses={todayClasses}
+        notes={notes.map(n => ({ id: n.id, title: n.title }))}
+        memories={getMemoryPrompt()}
         alerts={aiAlerts} 
         loading={alertsLoading} 
         onDismiss={dismissAlert} 
