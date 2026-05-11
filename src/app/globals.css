@@ -579,9 +579,9 @@ p {
   left: 0;
   right: 0;
   height: var(--mobile-nav-height);
-  background: color-mix(in srgb, var(--surface-card) 80%, transparent);
-  backdrop-filter: blur(20px) saturate(1.2);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  background: color-mix(in srgb, var(--surface-card) 60%, transparent);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
   border-top: 0.5px solid var(--border);
   border-radius: 20px 20px 0 0;
   z-index: 50;
@@ -592,8 +592,8 @@ p {
 }
 
 [data-theme="dark"] .mobile-nav {
-  background: color-mix(in srgb, var(--surface-card) 75%, transparent);
-  border-top-color: rgba(255,255,255,0.04);
+  background: color-mix(in srgb, var(--surface-card) 50%, transparent);
+  border-top-color: rgba(255,255,255,0.06);
 }
 
 .mobile-nav-item {
