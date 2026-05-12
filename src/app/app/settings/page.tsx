@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { CURRENT_VERSION } from '@/lib/changelog';
 
 export default function SettingsPage() {
-  const { user, signOut, signIn, googleAccessToken } = useAuth();
+  const { user, signOut, signIn } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { installPrompt, isInstalled, installApp } = usePWA();
   const { hasPin, setPin, verifyPin, clearPin } = usePin();
