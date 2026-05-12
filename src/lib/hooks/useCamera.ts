@@ -1,15 +1,20 @@
 import { useState, useCallback, useRef } from 'react';
 
 export function useCamera() {
-  const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const startCamera = useCallback(async () => {
     try {
+      // Stop existing stream if any
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+
       const constraints = {
         video: {
-          facingMode: 'environment', // ใช้กล้องหลัง
+          facingMode: 'environment',
           width: { ideal: 1920 },
           height: { ideal: 1080 }
         },
@@ -17,7 +22,7 @@ export function useCamera() {
       };
 
       const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-      setStream(mediaStream);
+      streamRef.current = mediaStream;
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
@@ -29,11 +34,14 @@ export function useCamera() {
   }, []);
 
   const stopCamera = useCallback(() => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     }
-  }, [stream]);
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  }, []);
 
   const captureImage = useCallback((): string | null => {
     if (!videoRef.current) return null;
@@ -53,7 +61,7 @@ export function useCamera() {
     startCamera,
     stopCamera,
     captureImage,
-    stream,
     error
   };
 }
+

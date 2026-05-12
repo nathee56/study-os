@@ -12,7 +12,7 @@ import {
 
 export default function ScanPage() {
   const router = useRouter();
-  const { videoRef, startCamera, stopCamera, captureImage, stream, error: cameraError } = useCamera();
+  const { videoRef, startCamera, stopCamera, captureImage, error: cameraError } = useCamera();
   const { addNote } = useNotes();
 
   const [image, setImage] = useState<string | null>(null);
@@ -23,10 +23,17 @@ export default function ScanPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const hasStartedRef = useRef(false);
 
   useEffect(() => {
-    startCamera();
-    return () => stopCamera();
+    if (!hasStartedRef.current) {
+      startCamera();
+      hasStartedRef.current = true;
+    }
+    return () => {
+      stopCamera();
+      hasStartedRef.current = false;
+    };
   }, [startCamera, stopCamera]);
 
   const handleCapture = () => {
