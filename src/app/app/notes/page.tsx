@@ -28,7 +28,7 @@ export default function NotesPage() {
 
   const handleNew = async () => {
     const id = await addNote({ title: 'โน้ตใหม่', body: '', subject: '', color: 'var(--note-white)' });
-    if (id) router.push(`/app/notes/${id}`);
+    if (id) router.push(`/app/notes/edit?id=${id}`);
   };
 
   const getPreview = (html: string) => {
@@ -37,7 +37,7 @@ export default function NotesPage() {
   };
 
   const handleNoteClick = (noteId: string) => {
-    router.push(`/app/notes/${noteId}`);
+    router.push(`/app/notes/edit?id=${noteId}`);
   };
 
   if (loading) return <div className="skeleton" style={{ height: 400, borderRadius: 24 }} />;
