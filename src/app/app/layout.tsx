@@ -31,6 +31,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+
+  // Check if we're on the AI page (mobile full-page mode)
+  const isAIPage = pathname === '/app/ai';
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -38,6 +42,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Splash screen — mobile only, once per session
+  useEffect(() => {
+    if (isMobile && typeof window !== 'undefined') {
+      const splashShown = sessionStorage.getItem('splash_shown');
+      if (!splashShown) {
+        setShowSplash(true);
+        sessionStorage.setItem('splash_shown', '1');
+        const timer = setTimeout(() => setShowSplash(false), 1200);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     if (!loading && !user && !isLocalMode) {
@@ -79,24 +96,69 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const basePathname = '/' + (key.split('/')[1] || '');
   const pageInfo = pageTitles[basePathname] || pageTitles[key] || { title: 'JamDai' };
 
+  // Hide topbar and navbar on AI page (mobile only)
+  const hideNavForAI = isMobile && isAIPage;
+
   return (
-    <div className="app-layout" data-is-mobile={isMobile}>
-      {/* Mobile overrides are handled in globals.css */}
+    <>
+      {/* Splash Screen — mobile only, once per session */}
+      <AnimatePresence>
+        {showSplash && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 99999,
+              background: 'var(--surface-base)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexDirection: 'column', gap: 16,
+            }}
+          >
+            <motion.img
+              src="/logo.png"
+              alt="JamDai"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              style={{ height: 120, width: 'auto', objectFit: 'contain' }}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.3 }}
+              style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500, letterSpacing: '0.5px' }}
+            >
+              Productivity Workspace
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
+      <div
+        className="app-layout"
+        data-is-mobile={isMobile}
+        style={hideNavForAI ? { '--mobile-bottom-space': '0px' } as React.CSSProperties : undefined}
+      >
+        {/* Mobile overrides are handled in globals.css */}
 
-      <Sidebar />
-      
-      <div className="main-area">
-        <Topbar title={pageInfo.title} subtitle={pageInfo.subtitle} />
-        <main className={`page-content ${isMobile ? 'scroll-fade-mask' : ''}`}>
-          <div key={pathname} className="animate-in-fade w-full">
-            {children}
-          </div>
-        </main>
+        <Sidebar />
+        
+        <div className="main-area">
+          {!hideNavForAI && <Topbar title={pageInfo.title} subtitle={pageInfo.subtitle} />}
+          <main
+            className={`page-content ${isMobile ? 'scroll-fade-mask' : ''}`}
+            style={hideNavForAI ? { paddingTop: '0px', paddingBottom: '0px', overflow: 'hidden' } : undefined}
+          >
+            <div key={pathname} className="animate-in-fade w-full">
+              {children}
+            </div>
+          </main>
+        </div>
+        
+        {!hideNavForAI && <MobileNav />}
+        <PWAPrompt />
       </div>
-      
-      <MobileNav />
-      <PWAPrompt />
-    </div>
+    </>
   );
 }

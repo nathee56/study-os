@@ -141,39 +141,56 @@ export default function DashboardPage() {
         onDismiss={dismissAlert}
       />
 
-      {/* Unified Stats Grid */}
+      {/* Unified Stats Strip (Horizontal, No Box) */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+      `}} />
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ staggerChildren: 0.1, delayChildren: 0.1 }}
+        transition={{ staggerChildren: 0.08, delayChildren: 0.05, ease: [0.25, 0.1, 0.25, 1], duration: 0.5 }}
+        className="hide-scrollbar"
         style={{ 
-          display: 'grid', 
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', 
-          gap: 10, 
-          marginBottom: 24 
+          display: 'flex', 
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+          marginBottom: 32,
+          padding: '0 8px',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
         }}
       >
         {statItems.map((stat, i) => (
           <motion.div 
             key={i} 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.02, translateY: -2 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="card stat-card mobile-card" 
-            style={{ textAlign: 'center', padding: '16px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'default' }}
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.9, opacity: 0.6 }}
+            transition={{ type: 'spring', stiffness: 350, damping: 25, mass: 0.5 }}
+            style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              cursor: 'pointer',
+              flexShrink: 0,
+              minWidth: 70,
+              WebkitTapHighlightColor: 'transparent'
+            }}
           >
             {stat.isProgress ? (
-              <div style={{ marginBottom: 6 }}>
-                <AnimatedProgressCircle progress={progressPct} size={28} strokeWidth={3} />
+              <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 46 }}>
+                <AnimatedProgressCircle progress={progressPct} size={42} strokeWidth={4} />
               </div>
             ) : stat.icon ? (
-              <div style={{ width: 32, height: 32, borderRadius: 10, background: `color-mix(in srgb, ${stat.color} 15%, transparent)`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
-                <stat.icon size={18} style={{ color: stat.color }} />
+              <div style={{ width: 46, height: 46, borderRadius: '50%', background: `color-mix(in srgb, ${stat.color} 15%, transparent)`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <stat.icon size={22} style={{ color: stat.color }} />
               </div>
             ) : null}
-            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>{stat.value}</div>
-            <div style={{ fontSize: 11, color: 'var(--text-hint)' }}>{stat.label}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1 }}>{stat.value}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6, fontWeight: 500 }}>{stat.label}</div>
           </motion.div>
         ))}
       </motion.div>

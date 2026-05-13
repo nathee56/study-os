@@ -155,6 +155,12 @@ export const IconChevronDown = ({ size, ...props }: IconProps) => (
   </svg>
 );
 
+export const IconChevronUp = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props}>
+    <polyline points="18,15 12,9 6,15" />
+  </svg>
+);
+
 export const IconUpload = ({ size, ...props }: IconProps) => (
   <svg {...defaultProps(size)} {...props}>
     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
@@ -461,4 +467,81 @@ export const IconLoader2 = ({ size, ...props }: IconProps) => (
     <path d="M21 12a9 9 0 11-6.219-8.56" />
   </svg>
 );
+
+/* ===== MINIMAL NAV ICONS (v3.0) ===== */
+
+export const IconHomeMinimal = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props} strokeWidth={1.8}>
+    <path d="M5 12l7-7 7 7" />
+    <path d="M5 12v7a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-7" />
+  </svg>
+);
+
+export const IconTaskCircle = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props} strokeWidth={1.8}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M8 12.5l2.5 2.5 5-5" />
+  </svg>
+);
+
+export const IconNoteMinimal = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props} strokeWidth={1.8}>
+    <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z" />
+    <polyline points="14,2 14,8 20,8" />
+  </svg>
+);
+
+export const IconAISparkle = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props} strokeWidth={1.8}>
+    <path d="M12 3l1.8 5.4L19 12l-5.2 3.6L12 21l-1.8-5.4L5 12l5.2-3.6z" />
+    <circle cx="18" cy="5" r="1.5" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+export const IconShield = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props}>
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </svg>
+);
+
+export const IconInfo = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props}>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="16" x2="12" y2="12" />
+    <line x1="12" y1="8" x2="12.01" y2="8" />
+  </svg>
+);
+
+export const IconDatabase = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props}>
+    <ellipse cx="12" cy="5" rx="9" ry="3" />
+    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+  </svg>
+);
+
+export const IconSmartphone = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props}>
+    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+    <line x1="12" y1="18" x2="12.01" y2="18" />
+  </svg>
+);
+
+export const IconGlobe = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props}>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+    <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+  </svg>
+);
+
+export const IconCreditCard = ({ size, ...props }: IconProps) => (
+  <svg {...defaultProps(size)} {...props}>
+    <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+    <line x1="1" y1="10" x2="23" y2="10" />
+  </svg>
+);
+
+
+
 

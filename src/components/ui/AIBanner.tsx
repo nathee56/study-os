@@ -306,10 +306,12 @@ export default function AIBanner({ pendingCount, todos, todayClasses, notes, mem
         .ai-banner-text h2 {
           font-size: 18px; font-weight: 800; color: white;
           margin: 0; letter-spacing: -0.02em;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.25);
         }
         .ai-banner-text p {
-          font-size: 13px; color: rgba(255,255,255,0.95);
+          font-size: 14px; color: rgba(255,255,255,1);
           margin: 4px 0 0; font-weight: 600;
+          text-shadow: 0 1px 4px rgba(0,0,0,0.2);
         }
         .expand-indicator {
           transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); opacity: 0.8;
@@ -327,7 +329,8 @@ export default function AIBanner({ pendingCount, todos, todayClasses, notes, mem
         .ai-detail-section { margin-bottom: 12px; }
         .ai-detail-title {
           display: flex; align-items: center; gap: 6px;
-          font-size: 13px; font-weight: 700; margin-bottom: 8px; opacity: 0.95;
+          font-size: 13px; font-weight: 700; margin-bottom: 8px; opacity: 1;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
         .ai-detail-title :global(svg) { width: 14px; height: 14px; }
         .ai-detail-list {
@@ -335,8 +338,9 @@ export default function AIBanner({ pendingCount, todos, todayClasses, notes, mem
         }
         .ai-detail-item {
           display: flex; align-items: center; gap: 10px;
-          background: rgba(255,255,255,0.12); padding: 8px 12px;
+          background: rgba(255,255,255,0.15); padding: 8px 12px;
           border-radius: 12px; font-size: 13px;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         .ai-detail-item-dot {
           width: 8px; height: 8px; border-radius: 50%;
@@ -350,7 +354,7 @@ export default function AIBanner({ pendingCount, todos, todayClasses, notes, mem
           overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
         .ai-detail-item-meta {
-          display: flex; gap: 8px; font-size: 11px; opacity: 0.8; margin-top: 2px;
+          display: flex; gap: 8px; font-size: 11px; opacity: 0.85; margin-top: 2px;
         }
         .ai-urgent-badge {
           background: rgba(255,68,68,0.3); border: 1px solid rgba(255,68,68,0.5);
@@ -378,7 +382,7 @@ export default function AIBanner({ pendingCount, todos, todayClasses, notes, mem
         }
 
         .markdown-body-banner { font-size: 13px; line-height: 1.5; }
-        .markdown-body-banner p { margin: 0 0 8px; }
+        .markdown-body-banner p { margin: 0 0 8px; color: white; }
         .markdown-body-banner p:last-child { margin: 0; }
         .markdown-body-banner ul, .markdown-body-banner ol { margin: 4px 0; padding-left: 20px; }
         .markdown-body-banner li { margin: 2px 0; }
@@ -392,11 +396,11 @@ export default function AIBanner({ pendingCount, todos, todayClasses, notes, mem
         .ai-alerts-list { display: flex; flex-direction: column; gap: 8px; }
         .ai-alert-item {
           display: flex; gap: 10px; align-items: flex-start;
-          background: rgba(255,255,255,0.1); padding: 10px;
+          background: rgba(255,255,255,0.12); padding: 10px;
           border-radius: 12px; border-left: 3px solid rgba(255,255,255,0.4);
         }
         .ai-alert-item.urgency-high {
-          background: rgba(255,255,255,0.15); border-left-color: #fff;
+          background: rgba(255,255,255,0.18); border-left-color: #fff;
         }
         .ai-alert-type-icon {
           width: 24px; height: 24px; border-radius: 8px;
@@ -404,28 +408,28 @@ export default function AIBanner({ pendingCount, todos, todayClasses, notes, mem
           display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
         .ai-alert-type-icon :global(svg) { width: 14px; height: 14px; }
-        .ai-alert-main-msg { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-        .ai-alert-sub-details { font-size: 11px; color: rgba(255,255,255,0.85); line-height: 1.4; }
+        .ai-alert-main-msg { font-size: 13px; font-weight: 700; margin-bottom: 2px; text-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+        .ai-alert-sub-details { font-size: 11px; color: rgba(255,255,255,0.9); line-height: 1.4; }
 
         /* Input */
         .ai-banner-input-wrapper { position: relative; z-index: 1; max-width: 400px; }
         .ai-banner-input-inner {
           position: relative; display: flex; align-items: center;
-          background: rgba(255,255,255,0.2); backdrop-filter: blur(15px);
-          border: 1px solid rgba(255,255,255,0.3); border-radius: 999px;
+          background: rgba(255,255,255,0.22); backdrop-filter: blur(15px);
+          border: 1px solid rgba(255,255,255,0.35); border-radius: 999px;
           padding: 3px 3px 3px 14px;
           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .ai-banner-input-inner:focus-within {
-          background: rgba(255,255,255,0.3);
+          background: rgba(255,255,255,0.35);
           border-color: rgba(255,255,255,0.5); transform: translateY(-1px);
         }
-        .ai-input-icon { color: rgba(255,255,255,0.8); margin-right: 8px; }
+        .ai-input-icon { color: rgba(255,255,255,0.9); margin-right: 8px; }
         .ai-banner-input {
           flex: 1; background: transparent; border: none; color: white;
           font-size: 13px; font-weight: 600; outline: none; height: 32px;
         }
-        .ai-banner-input::placeholder { color: rgba(255,255,255,0.7); }
+        .ai-banner-input::placeholder { color: rgba(255,255,255,0.85); }
         .ai-banner-send {
           width: 32px; height: 32px; background: white; color: var(--accent);
           border: none; border-radius: 50%;
@@ -455,8 +459,8 @@ export default function AIBanner({ pendingCount, todos, todayClasses, notes, mem
           .ai-banner { padding: 22px; border-radius: 28px; }
           .ai-banner-header { gap: 12px; margin-bottom: 20px; }
           .ai-banner-icon { width: 48px; height: 48px; }
-          .ai-banner-text h2 { font-size: 18px; }
-          .ai-banner-text p { font-size: 13px; margin-top: 4px; }
+          .ai-banner-text h2 { font-size: 19px; }
+          .ai-banner-text p { font-size: 14px; margin-top: 4px; }
           .ai-banner-input-wrapper { max-width: none; }
           .ai-banner-input-inner { padding: 4px 4px 4px 16px; }
           .ai-banner-input { height: 36px; font-size: 14px; }

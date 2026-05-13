@@ -1,12 +1,16 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTodos, Todo } from '@/lib/hooks/useTodos';
 import { useSchedule } from '@/lib/hooks/useSchedule';
-import { IconSearch, IconPlus, IconCheck, IconTrash, IconFilter, IconSort, IconSparkle, IconCheckSquare, IconChevronRight } from '@/components/ui/Icons';
+import { 
+  IconSearch, IconPlus, IconTrash, IconSparkle, IconFilter, 
+  IconChevronDown, IconChevronUp, IconCalendar 
+} from '@/components/ui/Icons';
 import { AnimatedCheckbox } from '@/components/ui/AnimatedComponents';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface AIPriority {
   todoId: string;
@@ -17,6 +21,7 @@ interface AIPriority {
 export default function TodoPage() {
   const { todos, loading, addTodo, toggleTodo, deleteTodo } = useTodos();
   const { schedule } = useSchedule();
+  const inputRef = useRef<HTMLInputElement>(null);
   
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'pending' | 'urgent' | 'done'>('all');
@@ -29,6 +34,8 @@ export default function TodoPage() {
   const [newPriority, setNewPriority] = useState<'normal' | 'urgent'>('normal');
   const [newDueDate, setNewDueDate] = useState('');
   const [newDifficulty, setNewDifficulty] = useState<number>(3);
+  const [showOptions, setShowOptions] = useState(false);
+  
   const [showMobileModal, setShowMobileModal] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -40,14 +47,6 @@ export default function TodoPage() {
     const check = () => setIsMobile(window.innerWidth <= 768);
     check();
     window.addEventListener('resize', check);
-
-    if (typeof window !== 'undefined' && window.location.search.includes('new=1')) {
-      const timer = setTimeout(() => setShowMobileModal(true), 300);
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener('resize', check);
-      };
-    }
     return () => window.removeEventListener('resize', check);
   }, []);
 
@@ -112,6 +111,14 @@ export default function TodoPage() {
     return items;
   }, [todos, search, filter, subjectFilter, sortBy, aiPriorities]);
 
+  const stats = useMemo(() => {
+    const total = todos.length;
+    const pending = todos.filter(t => !t.done).length;
+    const done = total - pending;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    return { total, pending, done, pct };
+  }, [todos]);
+
   const handleAdd = async () => {
     if (!newTitle.trim()) return;
     await addTodo({
@@ -120,78 +127,171 @@ export default function TodoPage() {
       dueDate: newDueDate ? new Date(newDueDate) : null, done: false,
     });
     setNewTitle(''); setNewSubject(''); setNewPriority('normal'); setNewDueDate(''); setNewDifficulty(3);
-    setShowMobileModal(false);
+    setShowMobileModal(false); setShowOptions(false);
+  };
+
+  const focusOrOpen = () => {
+    if (isMobile) setShowMobileModal(true);
+    else inputRef.current?.focus();
   };
 
   const renderTodoItem = (todo: Todo) => {
     const aiRank = aiPriorities.find(p => p.todoId === todo.id);
     return (
-      <div key={todo.id} 
-        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: '0.5px solid var(--border)' }} 
-        className={`animate-in ${todo.done ? 'done' : ''}`}>
+      <motion.div 
+        layout
+        key={todo.id} 
+        className={`todo-item animate-in ${todo.done ? 'done' : ''}`}
+      >
         <AnimatedCheckbox checked={todo.done} onChange={() => toggleTodo(todo.id, !todo.done)} />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 500 }} className={todo.done ? 'line-through' : ''}>{todo.title}</div>
-          <div style={{ display: 'flex', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+        
+        <div className="todo-item-content">
+          <div className="todo-item-title">{todo.title}</div>
+          <div className="todo-item-meta">
             {todo.subject && <span className="pill pill-neutral">{todo.subject}</span>}
             {todo.priority === 'urgent' && <span className="pill pill-danger">ด่วน</span>}
-            <span className="pill" style={{ background: 'var(--cream3)', color: 'var(--text-secondary)' }}>ยาก: {todo.difficulty || 3}/5</span>
             {todo.dueDate && (
               <span className="pill pill-warning">
-                {todo.dueDate.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}
+                📅 {todo.dueDate.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}
               </span>
             )}
             {aiRank && sortBy === 'ai-priority' && !todo.done && (
-              <span style={{ fontSize: 11, color: 'var(--orange)', fontWeight: 600 }}>✨ {aiRank.reason} ({aiRank.score}pt)</span>
+              <span style={{ fontSize: 11, color: 'var(--orange)', fontWeight: 600 }}>✨ {aiRank.reason}</span>
             )}
           </div>
         </div>
-        <button className="btn-icon" onClick={() => deleteTodo(todo.id)} style={{ flexShrink: 0 }}>
+
+        <button className="btn-icon todo-delete-btn" onClick={() => deleteTodo(todo.id)}>
           <IconTrash size={14} />
         </button>
-      </div>
+      </motion.div>
     );
   };
 
   if (loading) return <div className="skeleton" style={{ height: 400 }} />;
 
   return (
-    <div className="animate-in">
-        {/* Header - Fixed Overlap Logic */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-           <div style={{ flex: '1 1 300px', position: 'relative' }}>
-              <IconSearch size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-hint)' }} />
-              <input className="input" placeholder="ค้นหางาน..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ paddingLeft: 36, width: '100%' }} />
-           </div>
-           
-           <button 
-             className="btn-primary" 
-             onClick={handleAIPrioritize} 
-             disabled={isAnalyzing}
-             style={{ background: 'var(--orange)', border: 'none', borderRadius: 12, padding: '0 20px', height: 42, display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}
-           >
-             <IconSparkle size={16} className={isAnalyzing ? 'animate-spin' : ''} />
-             {isAnalyzing ? 'กำลังวิเคราะห์...' : 'AI จัดลำดับ'}
-           </button>
+    <div className="todo-container animate-in">
+        {/* Summary Strip */}
+        <div className="todo-summary">
+          <div className="todo-stat-group">
+            <div className="todo-stat">
+              <span className="todo-stat-label">ค้างอยู่</span>
+              <span className="todo-stat-value">{stats.pending}</span>
+            </div>
+            <div className="todo-stat">
+              <span className="todo-stat-label">เสร็จแล้ว</span>
+              <span className="todo-stat-value">{stats.done}</span>
+            </div>
+          </div>
+          <div className="todo-progress-container">
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', marginBottom: 4 }}>{stats.pct}% สำเร็จ</div>
+            <div className="progress-bar" style={{ height: 6 }}>
+              <div className="progress-bar-fill" style={{ width: `${stats.pct}%` }} />
+            </div>
+          </div>
         </div>
 
-        {/* AI Priority Top Card */}
+        {/* Action Zone: Search, AI, and Add Task */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <div style={{ flex: 1, position: 'relative' }}>
+                <IconSearch size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-hint)' }} />
+                <input className="input" placeholder="ค้นหางานของคุณ..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ paddingLeft: 40 }} />
+            </div>
+            
+            <button className="btn-primary" onClick={handleAIPrioritize} disabled={isAnalyzing} style={{ background: 'var(--orange)', padding: '0 18px', height: 46 }}>
+              <IconSparkle size={16} className={isAnalyzing ? 'animate-spin' : ''} />
+              <span className="desktop-only">{isAnalyzing ? 'กำลังวิเคราะห์...' : 'AI จัดลำดับ'}</span>
+            </button>
+
+            {isMobile && (
+              <button onClick={() => setShowMobileModal(true)} className="btn-primary" style={{ height: 46, padding: '0 16px', borderRadius: 14 }}>
+                <IconPlus size={20} />
+              </button>
+            )}
+          </div>
+
+          {/* Filters Row */}
+          <div className="todo-filters-row">
+              <div className="todo-segment-control">
+                {['all', 'pending', 'urgent', 'done'].map(f => (
+                  <button key={f} className={`todo-filter-btn ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f as any)}>
+                    {{ all: 'ทั้งหมด', pending: 'ค้าง', urgent: 'ด่วน', done: 'เสร็จ' }[f]}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', gap: 8, flex: isMobile ? 1 : 'unset' }}>
+                <select className="input" style={{ flex: isMobile ? 1 : 'unset', width: isMobile ? '100%' : 'auto', height: 40, fontSize: 13, padding: '0 12px' }} value={subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)}>
+                  <option value="">ทุกวิชา</option>
+                  {subjects.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <select className="input" style={{ flex: isMobile ? 1 : 'unset', width: isMobile ? '100%' : 'auto', height: 40, fontSize: 13, padding: '0 12px' }} value={sortBy} onChange={(e) => setSortBy(e.target.value as any)}>
+                    <option value="dueDate">วันส่ง</option>
+                    <option value="priority">สำคัญ</option>
+                    <option value="ai-priority">AI</option>
+                </select>
+              </div>
+          </div>
+
+          {/* Desktop Quick Add (Moved Up) */}
+          {!isMobile && (
+            <div style={{ position: 'relative', marginTop: 8 }}>
+              <div className="todo-quick-add">
+                <IconPlus size={20} style={{ color: 'var(--accent)' }} />
+                <input ref={inputRef} className="main-input" placeholder="เพิ่มงานใหม่ตรงนี้..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} />
+                
+                <select value={newSubject} onChange={e => setNewSubject(e.target.value)}>
+                    <option value="">วิชา</option>
+                    {subjects.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+
+                <select value={newPriority} onChange={e => setNewPriority(e.target.value as any)}>
+                    <option value="normal">ปกติ</option>
+                    <option value="urgent">ด่วน</option>
+                </select>
+
+                <input type="date" value={newDueDate} onChange={e => setNewDueDate(e.target.value)} />
+
+                <div className="todo-options-toggle" onClick={() => setShowOptions(!showOptions)}>
+                  {showOptions ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                </div>
+
+                <button className="btn-primary" onClick={handleAdd} style={{ height: 36, padding: '0 16px', borderRadius: 12 }}>เพิ่ม</button>
+              </div>
+
+              <AnimatePresence>
+                {showOptions && (
+                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="todo-options-expanded">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>ความยาก: {newDifficulty}/5</span>
+                      <input type="range" min="1" max="5" value={newDifficulty} onChange={e => setNewDifficulty(parseInt(e.target.value))} style={{ flex: 1 }} />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+
+        {/* AI Priority Highlight */}
         {sortBy === 'ai-priority' && aiPriorities.length > 0 && (
-          <div style={{ background: 'linear-gradient(135deg, #FF6B1A, #FF9A5C)', borderRadius: 20, padding: 18, color: 'white', marginBottom: 20 }}>
+          <div style={{ background: 'var(--accent-gradient)', borderRadius: 20, padding: 18, color: 'white', marginTop: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <IconSparkle size={18} />
-              <span style={{ fontSize: 14, fontWeight: 700 }}>AI แนะนำให้ทำ 3 สิ่งนี้ก่อน</span>
+              <span style={{ fontSize: 14, fontWeight: 700 }}>AI จัดลำดับแนะนำให้ทำสิ่งนี้ก่อน</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {aiPriorities.slice(0, 3).map((p, i) => {
+              {aiPriorities.slice(0, 2).map((p, i) => {
                 const todo = todos.find(t => t.id === p.todoId);
                 if (!todo) return null;
                 return (
-                  <div key={p.todoId} style={{ display: 'flex', gap: 10, alignItems: 'center', background: 'rgba(255,255,255,0.15)', padding: '10px 14px', borderRadius: 14 }}>
+                  <div key={p.todoId} style={{ display: 'flex', gap: 10, alignItems: 'center', background: 'rgba(255,255,255,0.15)', padding: '12px 16px', borderRadius: 14 }}>
                     <span style={{ fontSize: 18, fontWeight: 800 }}>#{i + 1}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{todo.title}</div>
-                      <div style={{ fontSize: 11, opacity: 0.85 }}>{p.reason}</div>
+                      <div style={{ fontSize: 14, fontWeight: 700 }}>{todo.title}</div>
+                      <div style={{ fontSize: 11, opacity: 0.9 }}>{p.reason}</div>
                     </div>
                   </div>
                 );
@@ -200,144 +300,54 @@ export default function TodoPage() {
           </div>
         )}
 
-        {/* Filters & Sorting */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16, overflowX: 'auto', paddingBottom: 4 }}>
-           {['all', 'pending', 'urgent', 'done'].map(f => (
-             <button key={f} className={`pill ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f as any)} style={{ whiteSpace: 'nowrap', background: filter === f ? 'var(--accent)' : 'var(--surface-raised)', color: filter === f ? 'white' : 'var(--text-secondary)', border: 'none', padding: '6px 16px', borderRadius: 20, cursor: 'pointer' }}>
-               {{ all: 'ทั้งหมด', pending: 'ค้างอยู่', urgent: 'งานด่วน', done: 'เสร็จแล้ว' }[f]}
-             </button>
-           ))}
-           <div style={{ flex: 1 }} />
-           <select className="input" style={{ width: 'auto', minWidth: 120 }} value={sortBy} onChange={(e) => setSortBy(e.target.value as any)}>
-              <option value="dueDate">วันส่ง</option>
-              <option value="priority">ความสำคัญ</option>
-              <option value="ai-priority">AI Priority</option>
-           </select>
-        </div>
-
         {/* Tasks List */}
-        <div className="card" style={{ padding: '0 20px' }}>
-          {filtered.length === 0 ? <p style={{ padding: 40, textAlign: 'center', color: 'var(--text-hint)' }}>ไม่พบรายการงาน</p> : filtered.map(renderTodoItem)}
+        <div className="todo-list" style={{ marginTop: 8 }}>
+          {filtered.length === 0 ? (
+            <div style={{ padding: '40px 0' }}>
+              <EmptyState 
+                icon={<IconPlus size={40} />}
+                title={search ? "ไม่พบงานที่ค้นหา" : "ไม่มีงานค้างแล้ว"}
+                description={search ? "ลองเปลี่ยนคำค้นหาดูใหม่" : "ยอดเยี่ยมมาก! วันนี้คุณจัดการทุกอย่างเสร็จสิ้นแล้ว"}
+                actionLabel={!search ? "เพิ่มงานใหม่" : undefined}
+                onAction={!search ? focusOrOpen : undefined}
+              />
+            </div>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {filtered.map(renderTodoItem)}
+            </AnimatePresence>
+          )}
         </div>
 
-        {/* Add Task Form (Desktop inline, Mobile hidden) */}
-        {!isMobile ? (
-          <div className="card" style={{ marginTop: 24, padding: 20 }}>
-             <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>เพิ่มงานใหม่</h3>
-             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <input className="input" placeholder="ทำอะไรดี..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} />
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                   <select className="input" style={{ flex: 1 }} value={newSubject} onChange={e => setNewSubject(e.target.value)}>
-                      <option value="">วิชา</option>
-                      {subjects.map(s => <option key={s} value={s}>{s}</option>)}
-                   </select>
-                   <select className="input" style={{ flex: 1 }} value={newPriority} onChange={e => setNewPriority(e.target.value as any)}>
-                      <option value="normal">ปกติ</option>
-                      <option value="urgent">ด่วน</option>
-                   </select>
-                   <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 12 }}>ยาก:</span>
-                      <input type="range" min="1" max="5" value={newDifficulty} onChange={e => setNewDifficulty(parseInt(e.target.value))} style={{ flex: 1 }} />
-                   </div>
-                   <input type="date" className="input" value={newDueDate} onChange={e => setNewDueDate(e.target.value)} />
-                </div>
-                <button className="btn-primary" onClick={handleAdd} style={{ marginTop: 4 }}>เพิ่มงาน</button>
-             </div>
-          </div>
-        ) : (
-          <button 
-            onClick={() => setShowMobileModal(true)}
-            className="btn-primary"
-            style={{ 
-              width: '100%', marginTop: 20, padding: 16, borderRadius: 20, 
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              fontSize: 15, fontWeight: 700,
-              background: 'color-mix(in srgb, var(--accent) 90%, transparent)'
-            }}
-          >
-            <IconPlus size={18} />
-            <span>เพิ่มงานใหม่</span>
-          </button>
-        )}
-
-        {/* Mobile Glassmorphism Modal Portal */}
+        {/* Mobile Modal Portal */}
         {mounted && isMobile && createPortal(
           <AnimatePresence>
             {showMobileModal && (
-              <div style={{
-                position: 'fixed', inset: 0, zIndex: 99999,
-                display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-                padding: '16px 16px 32px'
-              }}>
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setShowMobileModal(false)}
-                  style={{
-                    position: 'absolute', inset: 0,
-                    background: 'rgba(0,0,0,0.5)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)'
-                  }}
-                />
-                
-                <motion.div
-                  initial={{ y: 300, opacity: 0, scale: 0.95 }}
-                  animate={{ y: 0, opacity: 1, scale: 1 }}
-                  exit={{ y: 200, opacity: 0, scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 320, damping: 28 }}
-                  onClick={e => e.stopPropagation()}
-                  style={{
-                    position: 'relative', zIndex: 1,
-                    width: '100%', maxWidth: 400,
-                    background: 'var(--surface-card)',
-                    borderRadius: 32,
-                    overflow: 'hidden',
-                    boxShadow: '0 25px 60px rgba(0,0,0,0.25)',
-                    border: '1px solid var(--border)',
-                    display: 'flex', flexDirection: 'column'
-                  }}
-                >
-                  {/* Vibrant Line Art / Gradient Header Bar */}
-                  <div style={{ 
-                    padding: '24px 24px 16px', 
-                    background: 'linear-gradient(135deg, var(--orange) 0%, var(--accent) 100%)',
-                    color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <IconPlus size={22} style={{ strokeWidth: 2.5 }} />
-                      <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>เพิ่มงานใหม่</h3>
-                    </div>
-                    <button 
-                      onClick={() => setShowMobileModal(false)}
-                      style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: 99, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}
-                    >✕</button>
+              <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: 16 }}>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowMobileModal(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)' }} />
+                <motion.div initial={{ y: 300 }} animate={{ y: 0 }} exit={{ y: 300 }} className="card" style={{ position: 'relative', width: '100%', maxWidth: 450, borderRadius: 32, padding: 24, border: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+                    <h3 style={{ margin: 0 }}>เพิ่มงานใหม่</h3>
+                    <button onClick={() => setShowMobileModal(false)} style={{ border: 'none', background: 'none', fontSize: 20 }}>✕</button>
                   </div>
-
-                  <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                    <div style={{ background: 'var(--surface-raised)', padding: 16, borderRadius: 20, display: 'flex', flexDirection: 'column', gap: 12, border: '1px solid var(--border)' }}>
-                      <input className="input" placeholder="ทำอะไรดี..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} style={{ background: 'var(--surface-card)', borderColor: 'var(--border)' }} />
-                      <div style={{ display: 'flex', gap: 8 }}>
-                         <select className="input" style={{ flex: 1, background: 'var(--surface-card)', borderColor: 'var(--border)' }} value={newSubject} onChange={e => setNewSubject(e.target.value)}>
-                            <option value="">วิชา</option>
-                            {subjects.map(s => <option key={s} value={s}>{s}</option>)}
-                         </select>
-                         <select className="input" style={{ flex: 1, background: 'var(--surface-card)', borderColor: 'var(--border)' }} value={newPriority} onChange={e => setNewPriority(e.target.value as any)}>
-                            <option value="normal">ปกติ</option>
-                            <option value="urgent">ด่วน</option>
-                         </select>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface-card)', padding: '8px 12px', borderRadius: 14, border: '1px solid var(--border)' }}>
-                         <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent)' }}>ยาก:</span>
-                         <input type="range" min="1" max="5" value={newDifficulty} onChange={e => setNewDifficulty(parseInt(e.target.value))} style={{ flex: 1 }} />
-                      </div>
-                      <input type="date" className="input" value={newDueDate} onChange={e => setNewDueDate(e.target.value)} style={{ background: 'var(--surface-card)', borderColor: 'var(--border)' }} />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <input className="input" placeholder="ทำอะไรดี..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <select className="input" style={{ flex: 1 }} value={newSubject} onChange={e => setNewSubject(e.target.value)}>
+                        <option value="">วิชา</option>
+                        {subjects.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                      <select className="input" style={{ flex: 1 }} value={newPriority} onChange={e => setNewPriority(e.target.value as any)}>
+                        <option value="normal">ปกติ</option>
+                        <option value="urgent">ด่วน</option>
+                      </select>
                     </div>
-
-                    <button className="btn-primary" onClick={handleAdd} style={{ padding: 14, borderRadius: 16, fontSize: 15, fontWeight: 700, background: 'linear-gradient(135deg, var(--accent), var(--orange))', border: 'none' }}>
-                      ยืนยันเพิ่มงาน
-                    </button>
+                    <input type="date" className="input" value={newDueDate} onChange={e => setNewDueDate(e.target.value)} />
+                    <div style={{ padding: '8px 0' }}>
+                      <div style={{ fontSize: 12, marginBottom: 4 }}>ความยาก: {newDifficulty}/5</div>
+                      <input type="range" min="1" max="5" value={newDifficulty} onChange={e => setNewDifficulty(parseInt(e.target.value))} style={{ width: '100%' }} />
+                    </div>
+                    <button className="btn-primary" onClick={handleAdd} style={{ width: '100%', height: 50, borderRadius: 16 }}>ยืนยันเพิ่มงาน</button>
                   </div>
                 </motion.div>
               </div>
@@ -345,14 +355,6 @@ export default function TodoPage() {
           </AnimatePresence>,
           document.body
         )}
-
-        <style jsx>{`
-          .pill.active { transform: scale(1.05); }
-          .animate-spin { animation: spin 1s linear infinite; }
-          @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-          .line-through { text-decoration: line-through; }
-          .opacity-50 { opacity: 0.5; }
-        `}</style>
     </div>
   );
 }

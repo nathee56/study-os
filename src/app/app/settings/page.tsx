@@ -1,402 +1,222 @@
 'use client';
 
-import { useAuth } from '@/lib/hooks/useAuth';
-import { useTheme } from '@/lib/hooks/useTheme';
-import { usePWA } from '@/lib/hooks/usePWA';
-import { usePin } from '@/lib/hooks/usePin';
-import { useNotifications } from '@/lib/hooks/useNotifications';
-import { useAIMemory } from '@/lib/hooks/useAIMemory';
-import { IconSun, IconMoon, IconLogOut, IconUser, IconCloud, IconDownload, IconAlertCircle } from '@/components/ui/Icons';
 import { useState } from 'react';
-import Link from 'next/link';
-import { CURRENT_VERSION } from '@/lib/changelog';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+import {
+  IconArrowLeft,
+  IconUser,
+  IconBell,
+  IconShield,
+  IconMoon,
+  IconSun,
+  IconChevronRight,
+  IconLogOut,
+  IconCloud,
+  IconDatabase,
+  IconInfo,
+  IconSmartphone,
+  IconGlobe,
+  IconCreditCard
+} from '@/components/ui/Icons';
+import { motion } from 'framer-motion';
 
 export default function SettingsPage() {
-  const { user, signOut, signIn } = useAuth();
-  const { theme, toggleTheme } = useTheme();
-  const { installPrompt, isInstalled, installApp } = usePWA();
-  const { hasPin, setPin, verifyPin, clearPin } = usePin();
-  const { isSupported: notifSupported, isSubscribed, subscribe, unsubscribe } = useNotifications();
-  const { memories, deleteMemory, clearAllMemories } = useAIMemory();
+  const { user, signOut, isLocalMode, loginLocalMode } = useAuth();
+  const router = useRouter();
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
-  const [showPinForm, setShowPinForm] = useState(false);
-  const [currentPin, setCurrentPin] = useState('');
-  const [newPin, setNewPin] = useState('');
-  const [confirmPin, setConfirmPin] = useState('');
-  const [pinMsg, setPinMsg] = useState('');
-  const [pinError, setPinError] = useState('');
-
-  const handleSetPin = async () => {
-    setPinError('');
-    if (newPin.length < 4 || newPin.length > 6) {
-      setPinError('รหัสผ่านต้อง 4-6 หลัก');
-      return;
-    }
-    if (!/^\d+$/.test(newPin)) {
-      setPinError('รหัสผ่านต้องเป็นตัวเลขเท่านั้น');
-      return;
-    }
-    if (newPin !== confirmPin) {
-      setPinError('รหัสผ่านไม่ตรงกัน');
-      return;
-    }
-    if (hasPin) {
-      const ok = await verifyPin(currentPin);
-      if (!ok) {
-        setPinError('รหัสผ่านเดิมไม่ถูกต้อง');
-        return;
+  const containerVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+        staggerChildren: 0.05
       }
     }
-    await setPin(newPin);
-    setPinMsg('ตั้งรหัสผ่านสำเร็จ');
-    setShowPinForm(false);
-    setCurrentPin('');
-    setNewPin('');
-    setConfirmPin('');
-    setTimeout(() => setPinMsg(''), 3000);
   };
 
-  const handleRemovePin = async () => {
-    setPinError('');
-    if (hasPin) {
-      const ok = await verifyPin(currentPin);
-      if (!ok) {
-        setPinError('รหัสผ่านเดิมไม่ถูกต้อง');
-        return;
-      }
-    }
-    await clearPin();
-    setPinMsg('ลบรหัสผ่านสำเร็จ');
-    setShowPinForm(false);
-    setCurrentPin('');
-    setTimeout(() => setPinMsg(''), 3000);
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0 }
   };
 
   return (
-        <div className="animate-in" style={{ maxWidth: 640, margin: '0 auto' }}>
-      <style>{`
-        .settings-group {
-          background: var(--surface-card);
-          border: 1px solid var(--border);
-          border-radius: 20px;
-          overflow: hidden;
-          margin-bottom: 24px;
-        }
-        .settings-item {
-          padding: 16px 20px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          border-bottom: 0.5px solid var(--border);
-        }
-        .settings-item:last-child {
-          border-bottom: none;
-        }
-        .settings-item-col {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          padding: 16px 20px;
-          border-bottom: 0.5px solid var(--border);
-        }
-        .settings-item-col:last-child {
-          border-bottom: none;
-        }
-        .settings-title {
-          font-size: 15px;
-          font-weight: 500;
-          color: var(--text-primary);
-        }
-        .settings-desc {
-          font-size: 13px;
-          color: var(--text-hint);
-          margin-top: 2px;
-        }
-        .settings-section-title {
-          font-size: 13px;
-          font-weight: 600;
-          color: var(--text-secondary);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin-left: 16px;
-          margin-bottom: 8px;
-        }
-      `}</style>
-
-      <div className="settings-section-title">บัญชีผู้ใช้</div>
-      <div className="settings-group">
-        <div className="settings-item">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{
-              width: 52, height: 52, borderRadius: '50%', overflow: 'hidden',
-              background: 'var(--surface-raised)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <IconUser size={24} style={{ color: 'var(--text-hint)' }} />
-              )}
-            </div>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 600 }}>{user?.displayName || 'ผู้ใช้'}</div>
-              <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{user?.email}</div>
-            </div>
-          </div>
+    <div style={{ maxWidth: 640, margin: '0 auto', padding: '24px 16px 100px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
+        <button onClick={() => router.back()} className="btn-icon" style={{ background: 'var(--surface-card)', borderRadius: 12 }}>
+          <IconArrowLeft size={20} />
+        </button>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)' }}>ตั้งค่า</h1>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>จัดการบัญชีและความเป็นส่วนตัวของคุณ</p>
         </div>
       </div>
 
-      <div className="settings-section-title">ความปลอดภัย & ระบบ</div>
-      <div className="settings-group">
-        <div className="settings-item-col">
-          {pinMsg && (
-            <div style={{ 
-              padding: '10px 16px', borderRadius: 12, marginBottom: 16, width: '100%',
-              background: 'var(--success-light)', color: 'var(--success)', fontSize: 13, fontWeight: 600,
-            }}>
-              {pinMsg}
-            </div>
-          )}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            <div>
-              <div className="settings-title">รหัสผ่าน (PIN)</div>
-              <div className="settings-desc">
-                {hasPin ? 'มีรหัสผ่านแล้ว' : 'ยังไม่ได้ตั้งรหัสผ่าน'}
-              </div>
-            </div>
-            <button
-              className="btn-secondary"
-              onClick={() => {
-                setShowPinForm(!showPinForm);
-                setPinError('');
-                setCurrentPin('');
-                setNewPin('');
-                setConfirmPin('');
-              }}
-              style={{ fontSize: 13, padding: '6px 14px', height: 'auto' }}
-            >
-              {hasPin ? 'จัดการ' : 'ตั้งค่า'}
-            </button>
-          </div>
-
-          {showPinForm && (
-            <div style={{ 
-              marginTop: 16, padding: 16, borderRadius: 16, width: '100%',
-              background: 'var(--surface-base)', border: '1px solid var(--border)',
-            }}>
-              {hasPin && (
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
-                    รหัสผ่านเดิม
-                  </label>
-                  <input
-                    type="password"
-                    inputMode="numeric"
-                    maxLength={6}
-                    value={currentPin}
-                    onChange={(e) => { setCurrentPin(e.target.value.replace(/\D/g, '')); setPinError(''); }}
-                    placeholder="●●●●"
-                    className="input"
-                    style={{ textAlign: 'center', fontSize: 20, letterSpacing: 8 }}
-                  />
-                </div>
-              )}
-
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
-                  รหัสผ่านใหม่ (4-6 หลัก)
-                </label>
-                <input
-                  type="password"
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={newPin}
-                  onChange={(e) => { setNewPin(e.target.value.replace(/\D/g, '')); setPinError(''); }}
-                  placeholder="●●●●"
-                  className="input"
-                  style={{ textAlign: 'center', fontSize: 20, letterSpacing: 8 }}
-                />
-              </div>
-
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
-                  ยืนยันรหัสผ่านใหม่
-                </label>
-                <input
-                  type="password"
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={confirmPin}
-                  onChange={(e) => { setConfirmPin(e.target.value.replace(/\D/g, '')); setPinError(''); }}
-                  placeholder="●●●●"
-                  className="input"
-                  style={{ textAlign: 'center', fontSize: 20, letterSpacing: 8 }}
-                />
-              </div>
-
-              {pinError && (
-                <p style={{ fontSize: 13, color: 'var(--danger)', fontWeight: 600, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <IconAlertCircle size={14} /> {pinError}
-                </p>
-              )}
-
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="btn-primary" onClick={handleSetPin} style={{ flex: 1, height: 44, borderRadius: 14 }}>
-                  บันทึก
-                </button>
-                {hasPin && (
-                  <button className="btn-ghost" onClick={handleRemovePin} style={{ height: 44, borderRadius: 14, color: 'var(--danger)' }}>
-                    ลบ PIN
-                  </button>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        style={{ display: 'flex', flexDirection: 'column', gap: 24 }}
+      >
+        {/* Profile Section */}
+        <section>
+          <h2 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12, marginLeft: 4 }}>บัญชีผู้ใช้</h2>
+          <div className="settings-group" style={{ background: 'var(--surface-card)', borderRadius: 24, border: '1px solid var(--border)', overflow: 'hidden' }}>
+            <div style={{ padding: '20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ width: 56, height: 56, borderRadius: 20, background: 'var(--accent-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                {user?.photoURL ? (
+                  <img src={user.photoURL} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <IconUser size={24} style={{ color: 'var(--accent)' }} />
                 )}
               </div>
+              <div style={{ flex: 1 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>{user?.displayName || (isLocalMode ? 'Local User' : 'Guest')}</h3>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{user?.email || (isLocalMode ? 'โหมดใช้งานแบบออฟไลน์' : 'ไม่ได้เข้าสู่ระบบ')}</p>
+              </div>
+              {isLocalMode && (
+                <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 10 }}>ซิงค์ข้อมูล</button>
+              )}
             </div>
-          )}
-        </div>
-
-        <div className="settings-item">
-          <div>
-            <div className="settings-title">ธีมแอปพลิเคชัน</div>
-            <div className="settings-desc">โหมด {theme === 'light' ? 'สว่าง' : 'มืด'}</div>
+            
+            <SettingsItem 
+              icon={<IconShield size={20} />} 
+              label="ความปลอดภัยและรหัสผ่าน" 
+              sublabel="จัดการข้อมูลความปลอดภัยของคุณ"
+              variants={itemVariants}
+            />
           </div>
-          <button className="btn-secondary" onClick={toggleTheme} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, padding: '6px 14px', height: 'auto' }}>
-            {theme === 'light' ? <IconMoon size={14} /> : <IconSun size={14} />}
-            สลับโหมด
-          </button>
-        </div>
-      </div>
+        </section>
 
-      <div className="settings-section-title">การแจ้งเตือน & ระบบ</div>
-      <div className="settings-group">
-
-        {notifSupported && (
-          <div className="settings-item">
-            <div>
-              <div className="settings-title">การแจ้งเตือน (Push)</div>
-              <div className="settings-desc">
-                {isSubscribed ? 'รับการแจ้งเตือน' : 'ปิดการแจ้งเตือน'}
+        {/* Preferences Section */}
+        <section>
+          <h2 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12, marginLeft: 4 }}>ความชอบส่วนตัว</h2>
+          <div className="settings-group" style={{ background: 'var(--surface-card)', borderRadius: 24, border: '1px solid var(--border)', overflow: 'hidden' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--surface-raised)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
+                {isDarkMode ? <IconMoon size={20} /> : <IconSun size={20} />}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>โหมดมืด (Dark Mode)</div>
+              </div>
+              <div 
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                style={{ 
+                  width: 48, height: 26, borderRadius: 13, 
+                  background: isDarkMode ? 'var(--accent)' : 'var(--border)',
+                  position: 'relative', cursor: 'pointer', transition: 'all 0.3s ease'
+                }}
+              >
+                <div style={{ 
+                  width: 20, height: 20, borderRadius: '50%', background: 'white',
+                  position: 'absolute', top: 3, left: isDarkMode ? 25 : 3,
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }} />
               </div>
             </div>
-            <button
-              className={isSubscribed ? 'btn-secondary' : 'btn-primary'}
-              onClick={isSubscribed ? unsubscribe : subscribe}
-              style={{ fontSize: 13, padding: '6px 14px', height: 'auto', borderRadius: 999 }}
-            >
-              {isSubscribed ? 'ปิด' : 'เปิด'}
-            </button>
+            
+            <SettingsItem 
+              icon={<IconBell size={20} />} 
+              label="การแจ้งเตือน" 
+              sublabel="จัดการข้อความแจ้งเตือนทั้งหมด"
+              variants={itemVariants}
+            />
+            <SettingsItem 
+              icon={<IconGlobe size={20} />} 
+              label="ภาษา (Language)" 
+              sublabel="ไทย (Thai)"
+              variants={itemVariants}
+            />
           </div>
-        )}
-      </div>
+        </section>
 
-      <div className="settings-section-title">ปัญญาประดิษฐ์ (AI)</div>
-      <div className="settings-group">
-        <div className="settings-item-col">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: 12 }}>
-            <div>
-              <div className="settings-title">ความจำ AI ({memories.length} รายการ)</div>
-              <div className="settings-desc">ข้อมูลที่ AI จดจำเกี่ยวกับคุณ</div>
-            </div>
-            {memories.length > 0 && (
-              <button className="btn-ghost" onClick={clearAllMemories} style={{ fontSize: 13, color: 'var(--danger)', padding: '6px 12px', height: 'auto' }}>
-                ล้างทั้งหมด
-              </button>
-            )}
+        {/* Data & Storage */}
+        <section>
+          <h2 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12, marginLeft: 4 }}>ข้อมูลและพื้นที่เก็บข้อมูล</h2>
+          <div className="settings-group" style={{ background: 'var(--surface-card)', borderRadius: 24, border: '1px solid var(--border)', overflow: 'hidden' }}>
+            <SettingsItem 
+              icon={<IconCloud size={20} />} 
+              label="Cloud Sync" 
+              sublabel={user ? 'เชื่อมต่อแล้ว' : 'เข้าสู่ระบบเพื่อใช้งาน'}
+              variants={itemVariants}
+            />
+            <SettingsItem 
+              icon={<IconDatabase size={20} />} 
+              label="จัดการข้อมูลในเครื่อง" 
+              sublabel="สำรองข้อมูลหรือล้างข้อมูลทั้งหมด"
+              variants={itemVariants}
+            />
           </div>
-          
-          {memories.length === 0 ? (
-            <div style={{ padding: '12px', background: 'var(--surface-base)', borderRadius: 12, width: '100%', textAlign: 'center', fontSize: 13, color: 'var(--text-hint)' }}>
-              ยังไม่มีข้อมูลการจำ
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%' }}>
-              {memories.map(m => (
-                <div key={m.id} style={{
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '10px 14px', borderRadius: 12,
-                  background: 'var(--surface-base)', fontSize: 13,
-                  border: '1px solid var(--border)'
-                }}>
-                  <span style={{ flex: 1, color: 'var(--text-primary)' }}>{m.value}</span>
-                  <button
-                    className="btn-icon"
-                    onClick={() => deleteMemory(m.id)}
-                    style={{ padding: 4, width: 28, height: 28, opacity: 0.6 }}
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+        </section>
 
-      {!isInstalled && installPrompt && (
-        <div className="settings-group" style={{ borderColor: 'var(--accent)', background: 'var(--accent-soft)' }}>
-          <div className="settings-item" style={{ border: 'none' }}>
-            <div>
-              <div className="settings-title" style={{ color: 'var(--accent)' }}>ติดตั้ง JamDai App</div>
-              <div className="settings-desc" style={{ color: 'var(--text-secondary)' }}>ใช้งานได้รวดเร็วขึ้นผ่าน Home Screen</div>
-            </div>
-            <button className="btn-primary" onClick={installApp} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, padding: '8px 16px', height: 'auto' }}>
-              <IconDownload size={14} /> ติดตั้ง
-            </button>
+        {/* App Info */}
+        <section>
+          <h2 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12, marginLeft: 4 }}>เกี่ยวกับ</h2>
+          <div className="settings-group" style={{ background: 'var(--surface-card)', borderRadius: 24, border: '1px solid var(--border)', overflow: 'hidden' }}>
+            <SettingsItem 
+              icon={<IconInfo size={20} />} 
+              label="เกี่ยวกับ Study OS" 
+              sublabel="เวอร์ชัน 3.0.0 (Beta)"
+              variants={itemVariants}
+            />
+            <SettingsItem 
+              icon={<IconSmartphone size={20} />} 
+              label="ช่วยเหลือและสนับสนุน" 
+              variants={itemVariants}
+            />
           </div>
-        </div>
-      )}
+        </section>
 
-      <div className="settings-section-title">เกี่ยวกับระบบ</div>
-      <div className="settings-group">
-        <div className="settings-item">
-          <div>
-            <div className="settings-title">JamDai OS</div>
-            <div className="settings-desc">เวอร์ชัน {CURRENT_VERSION}</div>
-          </div>
-          <Link href="/app/whats-new" style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            color: 'var(--accent)', fontSize: 13, fontWeight: 500,
-            textDecoration: 'none', background: 'var(--accent-soft)',
-            padding: '6px 12px', borderRadius: 999
-          }}>
-            มีอะไรใหม่?
-          </Link>
-        </div>
-        <div className="settings-item" style={{ justifyContent: 'center' }}>
-          <div style={{ color: 'var(--text-hint)', fontSize: 12 }}>
-            ออกแบบและพัฒนาโดย รพีพัฒน์ กวางทอง
-          </div>
-        </div>
-      </div>
-
-      <div style={{ marginTop: 32, marginBottom: 40, display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {user ? (
-          <>
-            <button className="btn-secondary" onClick={signIn} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', height: 48, borderRadius: 16 }}>
-              <IconUser size={16} /> เปลี่ยนบัญชีผู้ใช้
-            </button>
-            <button className="btn-secondary" onClick={signOut} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', color: 'var(--text-secondary)', height: 48, borderRadius: 16 }}>
-              <IconLogOut size={16} /> ออกจากระบบ
-            </button>
-          </>
-        ) : (
-          <button className="btn-primary" onClick={() => { signOut(); }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', height: 48, borderRadius: 16 }}>
-            <IconUser size={16} /> เข้าสู่ระบบ
+        {/* Logout Button */}
+        <div style={{ marginTop: 8 }}>
+          <button 
+            onClick={() => signOut()}
+            className="btn-ghost" 
+            style={{ 
+              width: '100%', height: 56, borderRadius: 20, 
+              color: '#ff4b4b', display: 'flex', alignItems: 'center', 
+              justifyContent: 'center', gap: 10, fontWeight: 700,
+              background: 'rgba(255, 75, 75, 0.05)',
+              border: '1px solid rgba(255, 75, 75, 0.1)'
+            }}
+          >
+            <IconLogOut size={20} />
+            ออกจากระบบ
           </button>
-        )}
+        </div>
         
-        <button 
-          className="btn-secondary" 
-          onClick={() => { 
-            if(confirm('คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลทั้งหมด? การกระทำนี้ไม่สามารถย้อนกลับได้')) { 
-              localStorage.clear();
-              sessionStorage.clear();
-              signOut(); 
-            } 
-          }} 
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', color: 'var(--danger)', height: 48, borderRadius: 16, marginTop: 12, border: '1px solid var(--danger-light)', background: 'var(--danger-soft)' }}
-        >
-          <IconAlertCircle size={16} /> ลบข้อมูลทั้งหมด
-        </button>
-      </div>
+        <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
+          Study OS © 2024 • Created with ❤️ by JamDai Team
+        </p>
+      </motion.div>
     </div>
+  );
+}
+
+function SettingsItem({ icon, label, sublabel, variants }: { icon: React.ReactNode, label: string, sublabel?: string, variants?: any }) {
+  return (
+    <motion.div 
+      variants={variants}
+      whileTap={{ backgroundColor: 'var(--surface-raised)' }}
+      style={{ 
+        padding: '16px 20px', display: 'flex', alignItems: 'center', 
+        gap: 16, cursor: 'pointer', transition: 'all 0.2s ease',
+        borderBottom: '1px solid var(--border)'
+      }}
+    >
+      <div style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--surface-raised)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
+        {icon}
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{label}</div>
+        {sublabel && <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{sublabel}</div>}
+      </div>
+      <IconChevronRight size={18} style={{ color: 'var(--text-hint)' }} />
+    </motion.div>
   );
 }

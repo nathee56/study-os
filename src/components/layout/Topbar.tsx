@@ -203,39 +203,39 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
       </div>
     </header>
 
-    {/* Mobile Drawer — Premium Rounded Design */}
+    {/* Mobile Drawer — Premium Rounded Design (v3.0) */}
     {isMenuOpen && (
       <div className="mobile-only" style={{ position: 'fixed', inset: 0, zIndex: 9999 }}>
         {/* Backdrop */}
         <div 
-          style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }} 
+          style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }} 
           onClick={() => setIsMenuOpen(false)} 
         />
         {/* Drawer Panel */}
         <div style={{ 
           position: 'absolute', top: 12, bottom: 12, left: 12, width: 'calc(100vw - 80px)', maxWidth: 300,
-          background: 'color-mix(in srgb, var(--surface-card) 85%, transparent)',
+          background: 'color-mix(in srgb, var(--surface-card) 92%, transparent)',
           backdropFilter: 'blur(40px) saturate(200%)', WebkitBackdropFilter: 'blur(40px) saturate(200%)',
           border: '1px solid rgba(255,255,255,0.18)',
           borderRadius: 28,
           display: 'flex', flexDirection: 'column',
-          animation: 'drawerSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.25)',
+          animation: 'drawerSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.25)',
           overflow: 'hidden',
         }}>
           {/* Header */}
           <div style={{ padding: '24px 20px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <img src="/logo.png" alt="JamDai" style={{ height: 36, objectFit: 'contain' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <img src="/logo.png" alt="JamDai" style={{ height: 38, objectFit: 'contain' }} />
               <span style={{ 
                 background: 'linear-gradient(135deg, var(--accent), #FF9A5C)',
-                color: 'white', fontSize: 8, padding: '2px 7px', 
+                color: 'white', fontSize: 9, padding: '3px 8px', 
                 borderRadius: 99, fontWeight: 700, letterSpacing: '0.5px',
               }}>BETA</span>
             </div>
             <button onClick={() => setIsMenuOpen(false)} style={{ 
-              width: 38, height: 38, borderRadius: 99, border: 'none', cursor: 'pointer',
-              background: 'var(--surface-raised)', color: 'var(--text-secondary)',
+              width: 40, height: 40, borderRadius: 99, border: 'none', cursor: 'pointer',
+              background: 'var(--surface-raised)', color: 'var(--text-primary)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 0.2s',
             }}>
@@ -244,7 +244,7 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
           </div>
 
           {/* Nav Items */}
-          <nav style={{ flex: 1, overflowY: 'auto', padding: '4px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <nav style={{ flex: 1, overflowY: 'auto', padding: '4px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
             {menuItems.map((item, i) => {
               const active = (item.href === '/app') ? pathname === item.href : pathname.startsWith(item.href);
               const colors = [
@@ -254,6 +254,7 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
                 { bg: 'var(--teal-soft)', fg: 'var(--teal)' },
                 { bg: 'var(--rose-soft)', fg: 'var(--rose)' },
                 { bg: 'var(--amber-soft)', fg: 'var(--amber)' },
+                { bg: 'var(--sky-soft)', fg: 'var(--sky)' },
               ];
               const c = colors[i % colors.length];
               return (
@@ -261,16 +262,16 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
                   key={item.href} href={item.href} 
                   onClick={() => setIsMenuOpen(false)}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '10px 14px', borderRadius: 16, textDecoration: 'none',
+                    display: 'flex', alignItems: 'center', gap: 14,
+                    padding: '11px 14px', borderRadius: 16, textDecoration: 'none',
                     background: active ? c.bg : 'transparent',
-                    color: active ? c.fg : 'var(--text-secondary)',
-                    fontWeight: active ? 600 : 400, fontSize: 14,
+                    color: active ? c.fg : 'var(--text-primary)',
+                    fontWeight: active ? 600 : 500, fontSize: 15,
                     transition: 'all 0.2s ease',
                   }}
                 >
                   <div style={{
-                    width: 36, height: 36, borderRadius: 12,
+                    width: 40, height: 40, borderRadius: 12,
                     background: active ? c.fg : c.bg,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'all 0.2s',
@@ -284,19 +285,19 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
           </nav>
 
           {/* Footer */}
-          <div style={{ padding: '12px 12px 16px', borderTop: '1px solid var(--border)' }}>
+          <div style={{ padding: '12px 12px 20px', borderTop: '1px solid var(--border)' }}>
             <button 
               onClick={handleToggleTheme}
               style={{ 
-                width: '100%', display: 'flex', alignItems: 'center', gap: 12,
-                padding: '10px 14px', borderRadius: 16, border: 'none', cursor: 'pointer',
-                background: 'var(--surface-raised)', color: 'var(--text-secondary)',
-                fontSize: 14, fontWeight: 500, fontFamily: 'inherit',
+                width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+                padding: '11px 14px', borderRadius: 16, border: 'none', cursor: 'pointer',
+                background: 'var(--surface-raised)', color: 'var(--text-primary)',
+                fontSize: 15, fontWeight: 500, fontFamily: 'inherit',
                 transition: 'all 0.2s',
               }}
             >
               <div style={{
-                width: 36, height: 36, borderRadius: 12,
+                width: 40, height: 40, borderRadius: 12,
                 background: theme === 'dark' ? 'rgba(251,191,36,0.15)' : 'rgba(139,92,246,0.12)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
